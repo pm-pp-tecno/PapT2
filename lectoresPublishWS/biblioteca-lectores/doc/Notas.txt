@@ -1,0 +1,57 @@
+
+
+Conexion a base de datos con PGAdmin:
+
+Server Name: PAPT1
+Host: host.docker.internal
+Port: 5432
+Database: pap-lectores
+User: lectoruy
+
+
+
+La propiedad hbm2ddl.auto en hibernate.cfg.sml con el valor update es clave para que Hibernate cree automáticamente las tablas. 
+Si esta propiedad no está configurada, las tablas no se generarán.
+
+
+
+
+
+
+
+PGAdmin + Postgres:
+
+Descargar pgadmin para windows: pgadmin4-9.7-x64.exe
+Instalar
+
+Eliminar ambos contenedores. 
+
+Crear de nuevo el contenedor postgres asi (sin la red):
+docker run --name pg_db -e POSTGRES_USER=lectoruy -e POSTGRES_PASSWORD=pap12345 -e POSTGRES_DB=pap-lectores -p 5432:5432 -d postgres
+
+
+
+
+
+
+Tareas/Revisar:
+
+Cambiar hibernateUtil a Conexion y cambiar dir util a persistencia?
+Cambiar getsessionFactory a Conexion getInstancia()?
+
+Los DAO son parecidos a los COntroladores?
+Cambiamos DAO por COntroladores? Puede ser asi unimos Casos de uso con controladores...
+
+
+Entidades seria la capa de persistencia?
+
+Preuntas pa la ia:
+las entidades son la capa de persistencia? Que mas incluye la capa de persistencia?
+
+En logica que iria?
+
+Etc.
+
+Si mantenemos las entidades en entidades, creamos otros archivos similares para manejar la logica de cada entidad en un directorio Logica?
+O sea, separar lo que el profe unio en logica.
+

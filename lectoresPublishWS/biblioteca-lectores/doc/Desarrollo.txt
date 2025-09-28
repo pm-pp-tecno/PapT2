@@ -1,0 +1,42 @@
+
+
+10:10 27/8/2025
+
+
+Acabo de crear la clase HibernateUtil.java, que me va a permitir conectarme a la base de datos y tener una solo instancia como una fabrica.
+
+Lo siguientes pasos a seguir que me sugiere gemini son:
+
+
+1. Clases DAO (Data Access Object)
+
+Crea una clase DAO para cada entidad (o al menos para las principales) para separar la lógica de negocio de la lógica de persistencia. Por ejemplo, una clase LectorDAO que tenga métodos para guardarLector(), encontrarPorId(), actualizarEstado(), etc.
+
+2. Implementar las Historias de Usuario
+
+Usa las clases DAO para implementar los requisitos mínimos de la tarea, como:
+
+    Gestión de usuarios: Crear nuevos lectores y bibliotecarios, y modificar el estado de un lector a "SUSPENDIDO".
+
+Gestión de materiales: Registrar donaciones de libros y artículos especiales.
+
+Gestión de préstamos: Crear un nuevo préstamo y actualizar su estado.
+
+3. Interfaz Gráfica (GUI) en Swing
+
+Comienza a construir la interfaz de usuario en Swing, siguiendo los lineamientos del documento:
+
+    Un menú principal.
+
+    Uso de Internal Frames para cada caso de uso.
+
+    Botones para "Aceptar" y "Cancelar".
+
+La clase HibernateUtil será tu punto de entrada para todas las operaciones de persistencia que realices desde tu lógica de negocio y tu GUI.
+
+
+Antes de continuar con esos pasos voy a testear que me puedo conectar a la base de datos y se generar bien las tablas. Para ello me sugirio hacer un test conexion .java. 
+
+
+
+

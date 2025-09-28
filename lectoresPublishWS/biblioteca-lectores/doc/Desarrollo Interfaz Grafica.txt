@@ -1,0 +1,51 @@
+
+
+El próximo gran paso en tu proyecto es la interfaz gráfica de usuario (GUI), la cual se construirá en Swing. 
+La GUI será la capa de presentación que se conectará con la capa de servicio que ya hemos diseñado.
+
+1) Diseñar la Ventana Principal (JFrame):
+
+    Crea una clase principal para tu GUI que extienda de javax.swing.JFrame.
+
+    Este JFrame contendrá la barra de menú (JMenuBar) con las opciones de "Registros" y "Consultas".
+
+	También contendrá un "desktop pane" (JDesktopPane) que actuará como el contenedor para los JInternalFrame.
+
+	Asegúrate de configurar los botones para cerrar y minimizar la ventana.
+
+
+2) Crear los JInternalFrame para cada funcionalidad:
+
+	Crea una clase para cada formulario de registro, como "Registrar Lector" o "Registrar Libro".
+
+	Cada uno de estos formularios debe ser un JInternalFrame.
+
+	En estos formularios, debes incluir campos de texto (JTextField), botones (JButton), y los JComboBox para los datos precargados, como el estado o la zona.
+
+
+3) Conectar la GUI con la Capa de Servicio:
+
+    Los ActionListener de tus botones en la GUI llamarán a los métodos de la capa de servicio (LectorService, MaterialService, PrestamoService).
+
+    Por ejemplo, cuando el usuario haga clic en el botón "Aceptar" del formulario para registrar un lector, tu código de acción llamará a lectorService.agregarLector(...).
+
+    También tendrás que manejar los errores y excepciones con cuadros de diálogo (JOptionPane).
+
+
+Al seguir esta estructura, mantendrás una arquitectura de tres capas (presentación, servicio y persistencia) limpia y bien organizada, lo que es clave para un proyecto de este tipo.
+
+
+
+31/08/25
+
+
+Metodo centralizar la lógica de mostrar/ocultar los JInternalFrame en un solo lugar en ventanaMain:
+mostrarSoloEstePane(JInternalFrame frameAMostrar)
+
+Uso:
+Para mostrar el pane de inicio: mostrarSoloEstePane(internalFrameInicio);
+
+Para mostrar el formulario de lector: mostrarSoloEstePane(agregarLectorInternalFrame);
+
+Así, cada vez que agreguemos un nuevo formulario, solo tendremos que llamarlo desde el menú correspondiente, sin preocuparnos por el resto.
+

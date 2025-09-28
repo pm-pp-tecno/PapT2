@@ -1,0 +1,29 @@
+
+
+
+10:24 27/8/2025
+
+
+Chequear los contenedores corriendo:
+docker ps
+
+Chequear logs de un container:
+docker logs 7753fd35977a
+
+
+
+Ejecuta el programa Java y que se creen las tablas en la base de datos:
+En Eclipse, haz clic derecho en el archivo TestConexion.java y selecciona Run As > Java Application
+
+Verificar los resultados
+
+En la consola de Eclipse: Deberías ver los mensajes de éxito: "Conexión establecida con éxito" y "Tablas de la base de datos verificadas y/o creadas con éxito".
+
+En la base de datos PostgreSQL: 
+Una vez conectado, podrás ver que se han creado las tablas para usuarios, lectores, bibliotecarios, donaciones_material, libros, articulos_especiales y prestamos. 
+Si todo está correcto, habrás validado la conexión y la generación del esquema.
+
+
+
+
+

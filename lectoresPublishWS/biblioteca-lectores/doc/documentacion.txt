@@ -1,0 +1,133 @@
+
+JavaSe-1.8
+Maven
+
+Explicación de las Anotaciones
+
+Entidades
+
+Usuario:
+@Entity: Indica que esta clase es una entidad de JPA (Hibernate) y será mapeada a una tabla en la base de datos.
+
+@Table(name = "usuarios"): Especifica que la entidad Usuario se corresponde con la tabla llamada usuarios en la base de datos PostgreSQL.
+
+@Inheritance(strategy = InheritanceType.JOINED): Los Lectores y Bibliotecarios son tipos de Usuarios. 
+Con esta estrategia, Hibernate usará una tabla separada para cada subclase (Lector, Bibliotecario) que se unirá a la tabla usuarios para acceder a los datos.
+
+@Id: Marca el campo id como la clave primaria de la tabla.
+
+@Column(name = "nombre"): Mapea el atributo nombre de la clase a la columna nombre de la tabla de la base de datos.
+
+
+Lector:
+@PrimaryKeyJoinColumn(name = "id_lector"): Esta anotación es crucial. 
+Debido a que Lector extiende de Usuario, le dice a Hibernate que la clave primaria de la tabla lectores (id_lector) es también la clave foránea que se une a la tabla usuarios.
+
+@Enumerated(EnumType.STRING): Esta anotación es ideal para el campo estado.
+Le dice a Hibernate que almacene el valor del enum como una cadena de texto en la base de datos (por ejemplo, "ACTIVO" o "SUSPENDIDO") en lugar de un número ordinal. 
+Esto hace que los datos en la base de datos sean más legibles.
+
+
+Bibliotecario:
+@PrimaryKeyJoinColumn(name = "id_bibliotecario"): Al igual que con Lector, esta anotación une la clave primaria de la tabla bibliotecarios a la de la tabla usuarios, 
+siguiendo la estrategia de herencia.
+
+@Column(name = "numero_empleado"): Mapea el atributo numeroEmpleado a la columna numero_empleado en la base de datos.
+
+
+
+Prestamo
+
+@ManyToOne: Esta anotación define las relaciones. Un préstamo es asociado con un solo lector, un solo bibliotecario y un solo material. 
+Por lo tanto, desde la perspectiva del préstamo, la relación es "muchos a uno".
+
+@JoinColumn: Especifica la columna de la tabla prestamos que se utiliza para unirse a la tabla de la entidad relacionada. 
+Por ejemplo, @JoinColumn(name = "id_lector") crea una columna id_lector que actuará como clave foránea a la tabla lectores.
+
+@GeneratedValue(strategy = GenerationType.IDENTITY): Esta estrategia le dice a Hibernate que la base de datos se encargará de generar el valor de la clave primaria automáticamente. 
+Esto es ideal para PostgreSQL.
+
+
+
+HibernateUtil.java
+
+El SessionFactory es costoso de crear, por lo que es una buena práctica tener una instancia única en toda la aplicación.
+
+getSessionFactory(): Este método es la parte clave. Utiliza un patrón Singleton, lo que asegura que solo se cree una instancia de SessionFactory por cada vez que se ejecute la aplicación.
+
+Configuration().configure("hibernate.cfg.xml"): Lee el archivo hibernate.cfg.xml que creaste en la carpeta src/main/resources.
+
+
+
+
+
+Explicación de los DAOs (Data Access Object):
+
+El patrón DAO es un componente de software que abstrae la lógica de acceso a datos y manipulación de bases de datos, 
+mientras que un manejador (o handler) en el contexto de Java suele referirse a una clase que maneja peticiones o eventos específicos en aplicaciones web o de servicios, 
+no a la manipulación directa de bases de datos
+
+
+Capa de Persistencia (DAO)
+La capa de persistencia se encarga de manejar todas las operaciones de CRUD (Crear, Leer, Actualizar, Borrar) en la base de datos. 
+Su única responsabilidad es gestionar la forma en que los datos se almacenan y se recuperan. 
+Un DAO, como UsuarioDAO, contendrá métodos como guardar(Usuario usuario) o encontrarPorId(Long id). 
+El DAO no sabe nada de reglas de negocio, como, por ejemplo, si un usuario está suspendido o si tiene deudas. Su única preocupación es la comunicación con la base de datos.
+
+Capa Lógica (Servicios)
+La capa lógica, o de servicio, es donde resides las reglas de negocio de la aplicación. Es la que orquesta las operaciones de los DAOs para cumplir con una funcionalidad. 
+Por ejemplo, una clase de servicio como LectorService podría tener un método llamado suspenderLector(Long id). Para hacer esto, el servicio:
+
+1) Llama al LectorDAO para encontrar al lector por su ID.
+
+2) Verifica si el lector tiene préstamos pendientes (lógica de negocio).
+
+3) Si no los tiene, llama al LectorDAO nuevamente para actualizar el estado del lector a "SUSPENDIDO".
+
+
+MaterialDAO: 
+Contiene un método encontrarTodos() que utiliza HQL ("from Material") para obtener una lista de todos los materiales, 
+lo que te será útil para el requerimiento "consultar todas las donaciones registradas".
+
+
+PrestamoDAO: 
+Incluye métodos para guardar y actualizar un préstamo. Esto te permitirá crear un nuevo préstamo y luego cambiar su estado, como lo requiere la tarea. 
+También tiene un método encontrarTodos() que podría servir como base para los reportes opcionales.
+
+
+LectorDAO:
+guardar(Lector lector): Este método se usa para registrar nuevos lectores en la base de datos, 
+lo que cumple con el requisito de la historia de usuario "Como administrador, quiero registrar nuevos lectores en la base de datos".
+encontrarPorId(Long id): Este método es útil para encontrar a un lector en la base de datos.
+actualizar(Lector lector): Este método te permitirá modificar el estado de un lector a "SUSPENDIDO" y cambiar su zona, cumpliendo con otras historias de usuario.
+
+
+
+
+Comentarios Capa de servicio
+
+@Autowired: En un proyecto real con frameworks como Spring, las instancias de los DAOs se inyectarían automáticamente (@Autowired), pero para un proyecto simple como este, 
+inicializarlas en el constructor es una solución válida.
+
+Separación de responsabilidades: Fíjate que el código de servicio solo contiene lógica de negocio. Los servicios llaman a los DAOs para obtener o guardar datos, 
+pero no se preocupan por cómo se hacen esas operaciones. Esto te permite tener una arquitectura limpia y modular.
+
+
+La capa de servicio es el lugar perfecto para crear "manejadores" o "fachadas" que encapsulen la lógica de negocio y actúen como la interfaz principal entre la GUI y la capa de persistencia. 
+Esto mantiene la arquitectura limpia y te permite reutilizar el código de manera eficiente.
+
+ManejadorBiblioteca actuará como un punto de entrada para todas las operaciones de la aplicación. 
+Esta clase se encargará de crear y gestionar las instancias de los otros servicios (LectorService, MaterialService, etc.). La GUI solo necesitará interactuar con esta clase.
+
+
+
+Datatypes
+
+Los DTOs (Data Transfer Objects) son objetos que se usan para transferir datos de una capa de la aplicación a otra, 
+sin incluir la lógica de negocio o la complejidad del mapeo de la base de datos que tienen las entidades. 
+Esto ayuda a mantener la arquitectura limpia y a evitar exponer detalles innecesarios.
+
+
+
+
+
