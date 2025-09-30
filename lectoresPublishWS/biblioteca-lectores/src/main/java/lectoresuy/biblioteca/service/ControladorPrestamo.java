@@ -1,6 +1,9 @@
 package lectoresuy.biblioteca.service;
 
 import java.util.Date;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 import lectoresuy.biblioteca.entidades.Lector;
 import lectoresuy.biblioteca.entidades.Bibliotecario;
@@ -19,8 +22,11 @@ import lectoresuy.biblioteca.datatypes.DtPrestamo;
 import lectoresuy.biblioteca.excepciones.BibliotecarioNoEncontradoExcepcion;
 import lectoresuy.biblioteca.excepciones.BibliotecarioNoEncontradoExcepcion;
 import lectoresuy.biblioteca.excepciones.MaterialNoDisponibleExcepcion;
+import lectoresuy.biblioteca.excepciones.PrestamoRepetidoExcepcion;
 
 public class ControladorPrestamo implements IControladorPrestamo {
+	private static EntityManager em;
+	private static EntityManagerFactory emf;
 
     private ManejadorPrestamo manejadorPrestamo;
     private ManejadorLector manejadorLector;
@@ -66,9 +72,64 @@ public class ControladorPrestamo implements IControladorPrestamo {
         return manejadorPrestamo.verificarDisponibilidadMaterial(idMaterial);
     }
 
+	@Override
+	public void registrarPrestamo(Long idMaterial, String emailLector, String numeroBibliotecario, Date fechaDevolucion) throws PrestamoRepetidoExcepcion {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		em.getTransaction().begin();
+		try {
+			ManejadorPrestamo mP = ManejadorPrestamo.getInstancia();
+			Prestamo prestamo = mP.buscarPrestamo(idMaterial, emailLector, numeroBibliotecario);
+			if (prestamo != null)
+				throw new PrestamoRepetidoExcepcion("El préstamo ya existe");
+			Lector lector = manejadorLector.buscarLector(emailLector);
+			Bibliotecario bibliotecario = manejadorBibliotecario.buscarBibliotecario(numeroBibliotecario);
+			Material material = manejadorMaterial.buscarMaterial(idMaterial);
+			prestamo = new Prestamo(lector, bibliotecario, material, new Date(), fechaDevolucion, EstadoPrestamo.PENDIENTE);
+			em.persist(prestamo);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw e;
+		} finally {
+			em.close();
+		}
+	}
+
     @Override
     public List<DtPrestamo> listarPrestamos() {
-        return manejadorPrestamo.listarPrestamos();
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		List<DtPrestamo> resultado;
+		try {
+			ManejadorPrestamo mP = ManejadorPrestamo.getInstancia();
+			resultado = mP.listarPrestamos();
+		} finally {
+			em.close();
+		}
+		return resultado;
+    }
+
+    @Override
+    public void finalizarPrestamo(Long idPrestamo, Date fechaDevolucion) {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		em.getTransaction().begin();
+		try {
+			ManejadorPrestamo mP = ManejadorPrestamo.getInstancia();
+			Prestamo prestamo = mP.buscarPrestamoPorId(idPrestamo);
+			if (prestamo != null) {
+				prestamo.setFechaDevolucion(fechaDevolucion);
+				prestamo.setEstado(EstadoPrestamo.FINALIZADO);
+				mP.actualizarPrestamo(prestamo);
+			}
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw e;
+		} finally {
+			em.close();
+		}
     }
 
     @Override

@@ -12,9 +12,14 @@ import lectoresuy.biblioteca.datatypes.DtMaterial;
 import lectoresuy.biblioteca.datatypes.DtPrestamo;
 
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 
 public class ControladorMaterial implements IControladorMaterial {
+	private static EntityManager em;
+	private static EntityManagerFactory emf;
 
 	public ControladorMaterial() {
 		super();
@@ -37,9 +42,38 @@ public class ControladorMaterial implements IControladorMaterial {
 	}
 
 	@Override
+	public void agregarMaterial(/* parámetros */) throws MaterialRepetidoExcepcion {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		em.getTransaction().begin();
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			Material material = mM.buscarMaterial(/* parámetros clave */);
+			if (material != null)
+				throw new MaterialRepetidoExcepcion("El material ya existe");
+			material = new Material(/* ... */);
+			em.persist(material);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw e;
+		} finally {
+			em.close();
+		}
+	}
+
+	@Override
 	public List<DtMaterial> listarMateriales() {
-		ManejadorMaterial mM = ManejadorMaterial.getInstancia();
-		return mM.listarMateriales();
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		List<DtMaterial> resultado;
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			resultado = mM.listarMateriales();
+		} finally {
+			em.close();
+		}
+		return resultado;
 	}
 
 	@Override
@@ -47,4 +81,27 @@ public class ControladorMaterial implements IControladorMaterial {
 		ManejadorMaterial mM = ManejadorMaterial.getInstancia();
 		return mM.listarDonacionesPorFecha(fechaInicio, fechaFin);
 	}
+
+	@Override
+	public void actualizarMaterial(/* parámetros */) {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		em.getTransaction().begin();
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			Material material = mM.buscarMaterial(/* parámetros clave */);
+			if (material != null) {
+				// ...actualizar campos...
+				mM.actualizarMaterial(material);
+			}
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw e;
+		} finally {
+			em.close();
+		}
+	}
+
+	// ...otros métodos similares...
 }

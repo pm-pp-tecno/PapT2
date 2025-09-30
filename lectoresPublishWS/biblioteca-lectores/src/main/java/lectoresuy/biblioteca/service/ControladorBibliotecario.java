@@ -9,14 +9,6 @@ import javax.persistence.EntityManager;
 import lectoresuy.biblioteca.entidades.Bibliotecario;
 import lectoresuy.biblioteca.datatypes.DtBibliotecario;
 import java.util.List;
-//import lectoresuy.biblioteca.datatypes.DtArticulo;
-//import lectoresuy.biblioteca.datatypes.DtBibliotecario;
-//import lectoresuy.biblioteca.datatypes.DtLector;
-//import lectoresuy.biblioteca.datatypes.DtLibro;
-//import excepciones.ClaseRepetidaException;
-//import excepciones.SocioInscriptoException;
-//import excepciones.SocioNoInscriptoException;
-//import excepciones.SocioRepetidoExcepcion;
 import lectoresuy.biblioteca.interfaces.IControladorBibliotecario;
 import lectoresuy.biblioteca.util.HibernateUtil;
 import lectoresuy.biblioteca.excepciones.BibliotecarioRepetidoExcepcion;
@@ -45,7 +37,5 @@ public class ControladorBibliotecario implements IControladorBibliotecario {
 		return mB.listarBibliotecarios();
 	}
 
-	
-	
 
 }
