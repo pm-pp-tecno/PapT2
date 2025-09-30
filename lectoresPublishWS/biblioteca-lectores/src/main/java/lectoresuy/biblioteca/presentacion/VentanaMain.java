@@ -20,6 +20,7 @@ import java.awt.Color;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import publicadores.ControladorPublish;
 
 import lectoresuy.biblioteca.interfaces.Fabrica;
 import lectoresuy.biblioteca.interfaces.IControladorLector;
@@ -95,6 +96,9 @@ public class VentanaMain {
 	 */
 	public VentanaMain() {
 		initialize();
+		
+		ControladorPublish cp = new ControladorPublish();
+		cp.publicar();	
 		
 		Fabrica fabrica = Fabrica.getInstancia();
                 IControladorLector iconL = fabrica.getIControladorLector();
