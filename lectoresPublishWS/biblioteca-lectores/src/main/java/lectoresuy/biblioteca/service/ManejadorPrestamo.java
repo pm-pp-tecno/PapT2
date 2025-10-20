@@ -159,4 +159,16 @@ public class ManejadorPrestamo {
         }
         return dtMateriales;
     }
+
+    public Prestamo buscarPrestamo(Long idMaterial, String emailLector, String numeroBibliotecario) {
+        List<Prestamo> prestamos = prestamoDAO.encontrarTodos();
+        for (Prestamo p : prestamos) {
+            if (p.getMaterial() != null && p.getMaterial().getId().equals(idMaterial)
+                && p.getLector() != null && p.getLector().getEmail().equals(emailLector)
+                && p.getBibliotecario() != null && p.getBibliotecario().getNumeroEmpleado().equals(numeroBibliotecario)) {
+                return p;
+            }
+        }
+        return null;
+    }
 }

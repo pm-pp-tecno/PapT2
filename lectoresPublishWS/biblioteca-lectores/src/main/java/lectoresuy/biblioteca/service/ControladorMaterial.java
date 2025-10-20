@@ -41,17 +41,18 @@ public class ControladorMaterial implements IControladorMaterial {
 		mM.registrarNuevoArticulo(nuevoArticulo);
 	}
 
+	/*
 	@Override
-	public void agregarMaterial(/* parámetros */) throws MaterialRepetidoExcepcion {
+	public void agregarMaterial( parámetros) {
 		emf = Persistence.createEntityManagerFactory("Conexion");
 		em = emf.createEntityManager();
 		em.getTransaction().begin();
 		try {
 			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
-			Material material = mM.buscarMaterial(/* parámetros clave */);
+			Material material = mM.buscarMaterial(parámetros clave);
 			if (material != null)
 				throw new MaterialRepetidoExcepcion("El material ya existe");
-			material = new Material(/* ... */);
+			material = new Material();
 			em.persist(material);
 			em.getTransaction().commit();
 		} catch (Exception e) {
@@ -61,6 +62,7 @@ public class ControladorMaterial implements IControladorMaterial {
 			em.close();
 		}
 	}
+ 	*/
 
 	@Override
 	public List<DtMaterial> listarMateriales() {
@@ -82,14 +84,15 @@ public class ControladorMaterial implements IControladorMaterial {
 		return mM.listarDonacionesPorFecha(fechaInicio, fechaFin);
 	}
 
+/*	
 	@Override
-	public void actualizarMaterial(/* parámetros */) {
+	public void actualizarMaterial() {
 		emf = Persistence.createEntityManagerFactory("Conexion");
 		em = emf.createEntityManager();
 		em.getTransaction().begin();
 		try {
 			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
-			Material material = mM.buscarMaterial(/* parámetros clave */);
+			Material material = mM.buscarMaterial();
 			if (material != null) {
 				// ...actualizar campos...
 				mM.actualizarMaterial(material);
@@ -102,6 +105,7 @@ public class ControladorMaterial implements IControladorMaterial {
 			em.close();
 		}
 	}
-
+*/
+	
 	// ...otros métodos similares...
 }

@@ -20,7 +20,7 @@ import java.awt.Color;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import publicadores.ControladorPublish;
+import lectoresuy.biblioteca.publicadores.ControladorPublish;
 
 import lectoresuy.biblioteca.interfaces.Fabrica;
 import lectoresuy.biblioteca.interfaces.IControladorLector;
