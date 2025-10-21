@@ -9,8 +9,9 @@ import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.ParameterStyle;
 import javax.jws.soap.SOAPBinding.Style;
 import javax.xml.ws.Endpoint;
+import javax.xml.ws.WebServiceException;
 
-import configuraciones.WebServiceConfiguracion;
+import lectoresuy.biblioteca.configuraciones.WebServiceConfiguracion;
 import lectoresuy.biblioteca.datatypes.DtLector;
 import lectoresuy.biblioteca.datatypes.DtMaterial;
 import lectoresuy.biblioteca.datatypes.DtPrestamo;
@@ -60,13 +61,21 @@ public class ControladorPublish {
 	//LOS MÉTODOS QUE VAMOS A PUBLICAR
 	@WebMethod
 	public void agregarBibliotecario(String nombre, String email, String numeroEmpleado){
-		iconB.agregarBibliotecario(nombre, email, numeroEmpleado);
+		try {
+			iconB.agregarBibliotecario(nombre, email, numeroEmpleado);
+		} catch (Exception ex) {
+			throw new WebServiceException("Error al agregar bibliotecario: " + ex.getMessage(), ex);
+		}
 	}
 
 	// Métodos de Lector
 	@WebMethod
 	public void agregarLector(String nombre, String email, String direccion, Date fechaRegistro, String estado, String zona) {
-		iconL.agregarLector(nombre, email, direccion, fechaRegistro, EstadoLector.valueOf(estado), zona);
+		try {
+			iconL.agregarLector(nombre, email, direccion, fechaRegistro, EstadoLector.valueOf(estado), zona);
+		} catch (Exception ex) {
+			throw new WebServiceException("Error al agregar lector: " + ex.getMessage(), ex);
+		}
 	}
 
 	@WebMethod
@@ -85,11 +94,13 @@ public class ControladorPublish {
 		iconL.cambiarZonaLector(email, nuevaZona);
 	}
 
+	/*
 	// Métodos de Material
 	@WebMethod
 	public void agregarMaterial(String titulo, String autor, String tipo, String zona) {
 		iconM.agregarMaterial(titulo, autor, tipo, zona);
 	}
+	*/
 
 	@WebMethod
 	public DtMaterial[] listarMateriales() {
@@ -97,15 +108,21 @@ public class ControladorPublish {
 		return lista.toArray(new DtMaterial[0]);
 	}
 
+	/*
 	@WebMethod
 	public void actualizarMaterial(String id, String nuevoTitulo, String nuevoAutor, String nuevoTipo, String nuevaZona) {
 		iconM.actualizarMaterial(id, nuevoTitulo, nuevoAutor, nuevoTipo, nuevaZona);
 	}
+	*/
 
 	// Métodos de Prestamo
 	@WebMethod
 	public void registrarPrestamo(Long idMaterial, String emailLector, String numeroBibliotecario, Date fechaDevolucion) {
-		iconP.registrarPrestamo(idMaterial, emailLector, numeroBibliotecario, fechaDevolucion);
+		try {
+			iconP.agregarPrestamo(idMaterial, emailLector, numeroBibliotecario, fechaDevolucion);
+		} catch (Exception ex) {
+			throw new WebServiceException("Error al registrar préstamo: " + ex.getMessage(), ex);
+		}
 	}
 
 	@WebMethod
@@ -114,9 +131,12 @@ public class ControladorPublish {
 		return lista.toArray(new DtPrestamo[0]);
 	}
 
+	/*
+	 * Cambiar por actualizarEstadoPrestamo????
 	@WebMethod
 	public void finalizarPrestamo(Long idPrestamo, Date fechaDevolucionReal) {
 		iconP.finalizarPrestamo(idPrestamo, fechaDevolucionReal);
 	}
+	*/
 
 }
