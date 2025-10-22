@@ -7,9 +7,10 @@
     <persistence-unit name="Conexion">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/pap-lectores"/>
-            <property name="jakarta.persistence.jdbc.user" value="lectoruy"/>
-            <property name="jakarta.persistence.jdbc.password" value="pap12345"/>
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/pap-lectores"/>
+            <property name="javax.persistence.jdbc.user" value="lectoruy"/>
+            <property name="javax.persistence.jdbc.password" value="pap12345"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
         </properties>
