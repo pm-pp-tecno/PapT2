@@ -1,6 +1,24 @@
 
 
 
+22/10/2025
+
+
+Tarea 2
+
+
+mvn clean compile
+
+(tiene que estar corriendo el servidor PostgreSQL):
+mvn exec:java
+
+Luego en el navegador
+http://127.0.0.1:8080/lectoresuy?wsdl
+
+
+mvn tomcat7:run
+
+
 10:24 27/8/2025
 
 
