@@ -5,7 +5,8 @@ import java.io.FileReader;
 import java.util.HashMap;
 
 public class WebServiceConfiguracion {
-	private String path = System.getProperty("user.home") + "/.Biblioteca/.properties";
+	//private String path = System.getProperty("user.home") + "/.Biblioteca/.properties";
+    private String path = ".properties";
     private HashMap<String, String> configs;
     
     public WebServiceConfiguracion() throws Exception {
