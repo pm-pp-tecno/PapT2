@@ -26,9 +26,9 @@
 	</button>
 	<div class="collapse navbar-collapse" id="navbarSupportedContent">
 		<ul class="navbar-nav mr-auto">
-			<li class="nav-item active"><a class="nav-link" href="#">Homepage
+			<!--li class="nav-item active"><a class="nav-link" href="#">Homepage
 					<span class="sr-only">(current)</span>
-			</a></li>
+			</a></li-->
 			<li class="nav-item"><a class="nav-link" href="gestionUsuarios.jsp">Gestion Usuarios</a></li>
 			<li class="nav-item"><a class="nav-link" href="gestionMateriales.jsp">Gestion Materiales</a></li>
 			<li class="nav-item"><a class="nav-link" href="gestionPrestamos.jsp">Gestion Prestamos</a></li>
