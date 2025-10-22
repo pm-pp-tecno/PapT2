@@ -4,7 +4,7 @@
 <hibernate-configuration>
     <session-factory>
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://host.docker.internal:5432/pap-lectores</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/pap-lectores</property>
         <property name="hibernate.connection.username">lectoruy</property>
         <property name="hibernate.connection.password">pap12345</property>
 
