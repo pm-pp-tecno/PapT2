@@ -6,18 +6,18 @@
 
 Tarea 2
 
-
+En la carpeta \lectoresPublishWS\biblioteca-lectores:
 Cada vez que se hacen cambios importantes en los archivos hay que hacer:
 mvn clean compile
 
-En la carpeta \lectoresPublishWS\biblioteca-lectores:
-(tiene que estar corriendo el servidor PostgreSQL):
+tiene que estar corriendo el servidor PostgreSQL:
 mvn exec:java
 
 Luego en el navegador compruebo que anda el xml:
 http://127.0.0.1:8081/lectoresuy?wsdl
 
 Se cierra con Ctrl + c
+
 
 Luego correr el servidor tomcat en la carpeta lectoresWebClientWS:
 mvn tomcat7:run
