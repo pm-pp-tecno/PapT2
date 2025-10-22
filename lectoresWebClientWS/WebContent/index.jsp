@@ -31,8 +31,7 @@
 			</a></li>
 			<li class="nav-item"><a class="nav-link" href="gestionUsuarios.jsp">Gestion Usuarios</a></li>
 			<li class="nav-item"><a class="nav-link" href="gestionMateriales.jsp">Gestions Materiales</a></li>
-			<li class="nav-item"><a class="nav-link"
-				href="gestionInscripcion.jsp">Prestamos</a></li>
+			<li class="nav-item"><a class="nav-link" href="gestionPrestamos.jsp">Prestamos</a></li>
 			<li class="nav-item"><a class="nav-link" href="consultas.jsp">Consultas</a></li>
 		</ul>
 	</div>
