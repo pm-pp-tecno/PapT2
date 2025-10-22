@@ -15,7 +15,7 @@ En la carpeta \lectoresPublishWS\biblioteca-lectores:
 mvn exec:java
 
 Luego en el navegador compruebo que anda el xml:
-http://127.0.0.1:8080/lectoresuy?wsdl
+http://127.0.0.1:8081/lectoresuy?wsdl
 
 Se cierra con Ctrl + c
 
@@ -25,7 +25,7 @@ mvn tomcat7:run
 
 URLs:
 Web Service WSDL (solo para chequear al principio): 
-http://127.0.0.1:8080/lectoresuy?wsdl
+http://127.0.0.1:8081/lectoresuy?wsdl
 
 
 Página JSP: 
