@@ -1,5 +1,23 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="publicadores.DtLector" %>
+<%@ page import="publicadores.EstadoLector" %>
+
+<%
+	// Obtener datos del servlet
+	List<DtLector> lectores = (List<DtLector>) request.getAttribute("lectores");
+	String errorMessage = (String) request.getAttribute("errorMessage");
+	SimpleDateFormat dateFormat = (SimpleDateFormat) request.getAttribute("dateFormat");
+    
+	// Si no hay datos, inicializar lista vacía
+	if (lectores == null) {
+		lectores = new java.util.ArrayList();
+	}
+%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -16,30 +34,112 @@
 </head>
 
 <body>
-	<nav class="navbar navbar-expand-lg navbar-light bg-light"> <a
-		class="navbar-brand" href="#">Lectores UY</a>
-	<button class="navbar-toggler" type="button" data-toggle="collapse"
-		data-target="#navbarSupportedContent"
-		aria-controls="navbarSupportedContent" aria-expanded="false"
-		aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-	</button>
-	<div class="collapse navbar-collapse" id="navbarSupportedContent">
-		<ul class="navbar-nav mr-auto">
-			<!--li class="nav-item active"><a class="nav-link" href="#">Homepage
-					<span class="sr-only">(current)</span>
-			</a></li-->
-			<li class="nav-item"><a class="nav-link" href="gestionUsuarios.jsp">Gestion Usuarios</a></li>
-			<li class="nav-item"><a class="nav-link" href="gestionMateriales.jsp">Gestion Materiales</a></li>
-			<li class="nav-item"><a class="nav-link" href="gestionPrestamos.jsp">Gestion Prestamos</a></li>
-			<li class="nav-item"><a class="nav-link" href="consultas.jsp">Consultas</a></li>
-		</ul>
-	</div>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light"> 
+		<a class="navbar-brand" href="#">Lectores UY</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false"
+			aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item active">
+					<a class="nav-link" href="gestionUsuarios">Gestion Usuarios</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="gestionMateriales.jsp">Gestion Materiales</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="gestionPrestamos.jsp">Gestion Prestamos</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="consultas.jsp">Consultas</a>
+				</li>
+			</ul>
+		</div>
 	</nav>
 
-    <p>Gestion de Usuarios</p>
-
-
+	<div class="container mt-4">
+		<div class="row">
+			<div class="col-12">
+				<h2 class="mb-4">Gestión de Usuarios Lectores</h2>
+				
+				<% if (errorMessage != null) { %>
+					<div class="alert alert-danger" role="alert">
+						<%= errorMessage %>
+					</div>
+				<% } %>
+				
+				<div class="card">
+					<div class="card-header">
+						<h5 class="mb-0">Lista de Lectores</h5>
+					</div>
+					<div class="card-body">
+						<% if (lectores.isEmpty()) { %>
+							<div class="alert alert-info" role="alert">
+								No hay lectores registrados en el sistema.
+							</div>
+						<% } else { %>
+							<div class="table-responsive">
+								<table class="table table-striped table-hover">
+									<thead class="thead-dark">
+										<tr>
+											<th>ID</th>
+											<th>Nombre</th>
+											<th>Email</th>
+											<th>Dirección</th>
+											<th>Fecha Registro</th>
+											<th>Estado</th>
+											<th>Zona</th>
+										</tr>
+									</thead>
+									<tbody>
+										<% for (DtLector lector : lectores) { %>
+											<tr>
+												<td><%= lector.getId() %></td>
+												<td><%= lector.getNombre() %></td>
+												<td><%= lector.getEmail() %></td>
+												<td><%= lector.getDireccion() %></td>
+												<% 
+													Object fechaObj = lector.getFechaRegistro();
+													String fechaStr = "N/A";
+													if (fechaObj != null && dateFormat != null) {
+														if (fechaObj instanceof java.util.Date) {
+															fechaStr = dateFormat.format((java.util.Date) fechaObj);
+														} else if (fechaObj instanceof javax.xml.datatype.XMLGregorianCalendar) {
+															fechaStr = dateFormat.format(((javax.xml.datatype.XMLGregorianCalendar) fechaObj).toGregorianCalendar().getTime());
+														} else {
+															// Fallback: usar toString() si no es un tipo esperado
+															fechaStr = fechaObj.toString();
+														}
+													}
+												%>
+												<td><%= fechaStr %></td>
+												<td>
+													<% if (lector.getEstado() == EstadoLector.ACTIVO) { %>
+														<span class="badge badge-success">Activo</span>
+													<% } else if (lector.getEstado() == EstadoLector.SUSPENDIDO) { %>
+														<span class="badge badge-danger">Suspendido</span>
+													<% } else { %>
+														<span class="badge badge-secondary">Desconocido</span>
+													<% } %>
+												</td>
+												<td><%= lector.getZona() != null ? lector.getZona() : "N/A" %></td>
+											</tr>
+										<% } %>
+									</tbody>
+								</table>
+							</div>
+							<div class="mt-3">
+								<small class="text-muted">Total de lectores: <%= lectores.size() %></small>
+							</div>
+						<% } %>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->

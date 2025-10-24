@@ -18,6 +18,9 @@ http://127.0.0.1:8081/lectoresuy?wsdl
 
 Se cierra con Ctrl + c
 
+Desde src en WebClient:
+wsimport -keep -p publicadores http://127.0.0.1:8081/lectoresuy?wsdl
+
 
 Luego correr el servidor tomcat en la carpeta lectoresWebClientWS:
 mvn tomcat7:run
@@ -30,6 +33,13 @@ http://127.0.0.1:8081/lectoresuy?wsdl
 
 Página JSP: 
 http://localhost:8080/lectores-web/
+
+
+
+Nuevos:
+
+en lectoresWebClientWS:
+mvn jaxws:wsimport
 
 
 
