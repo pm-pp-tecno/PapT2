@@ -18,9 +18,14 @@ http://127.0.0.1:8081/lectoresuy?wsdl
 
 Se cierra con Ctrl + c
 
-Desde src en WebClient:
+Desde src en WebClient (solo una vez, ya no se precisa):
 wsimport -keep -p publicadores http://127.0.0.1:8081/lectoresuy?wsdl
 
+Cuando hay cambios:
+mvn clean compile
+
+Me dijo la ia, pero creo que no es necesario:
+mvn package
 
 Luego correr el servidor tomcat en la carpeta lectoresWebClientWS:
 mvn tomcat7:run

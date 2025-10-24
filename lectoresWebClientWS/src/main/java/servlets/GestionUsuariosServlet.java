@@ -1,4 +1,4 @@
-package lectoresuy.web.servlets;
+package servlets;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,16 +15,17 @@ import publicadores.ControladorPublishService;
 import publicadores.DtLector;
 import publicadores.DtLectorArray;
 
-@WebServlet("/gestionUsuarios")
 public class GestionUsuariosServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
     public GestionUsuariosServlet() {
         super();
+        System.out.println("=== CONSTRUCTOR GestionUsuariosServlet EJECUTADO ===");
     }
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
+        System.out.println("=== INICIANDO doGet DE GestionUsuariosServlet ===");
         
         List<DtLector> lectores = new ArrayList<DtLector>();
         String errorMessage = null;

@@ -35,7 +35,7 @@
 
 <body>
 	<nav class="navbar navbar-expand-lg navbar-light bg-light"> 
-		<a class="navbar-brand" href="#">Lectores UY</a>
+		<a class="navbar-brand" href="index">Lectores UY</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse"
 			data-target="#navbarSupportedContent"
 			aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -48,13 +48,13 @@
 					<a class="nav-link" href="gestionUsuarios">Gestion Usuarios</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="gestionMateriales.jsp">Gestion Materiales</a>
+					<a class="nav-link" href="gestionMateriales">Gestion Materiales</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="gestionPrestamos.jsp">Gestion Prestamos</a>
+					<a class="nav-link" href="gestionPrestamos">Gestion Prestamos</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="consultas.jsp">Consultas</a>
+					<a class="nav-link" href="consultas">Consultas</a>
 				</li>
 			</ul>
 		</div>
@@ -92,6 +92,7 @@
 											<th>Fecha Registro</th>
 											<th>Estado</th>
 											<th>Zona</th>
+											<th>Acciones</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -126,6 +127,18 @@
 													<% } %>
 												</td>
 												<td><%= lector.getZona() != null ? lector.getZona() : "N/A" %></td>
+												<td>
+													<a href="#" 
+													   class="btn btn-sm btn-primary edit-btn"
+													   data-id='<%= lector.getId() %>'
+													   data-nombre='<%= lector.getNombre() != null ? lector.getNombre().replace("\"","&quot;") : "" %>'
+													   data-email='<%= lector.getEmail() != null ? lector.getEmail().replace("\"","&quot;") : "" %>'
+													   data-direccion='<%= lector.getDireccion() != null ? lector.getDireccion().replace("\"","&quot;") : "" %>'
+													   data-estado='<%= lector.getEstado() != null ? lector.getEstado().name() : "" %>'
+													   data-zona='<%= lector.getZona() != null ? lector.getZona().replace("\"","&quot;") : "" %>'>
+													   Editar
+													</a>
+												</td>
 											</tr>
 										<% } %>
 									</tbody>
@@ -141,6 +154,54 @@
 		</div>
 	</div>
 
+	<!-- Edit modal -->
+	<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <form id="editForm" method="post" action="/editarUsuario">
+	        <div class="modal-header">
+	          <h5 class="modal-title" id="editModalLabel">Editar Lector</h5>
+	          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	            <span aria-hidden="true">&times;</span>
+	          </button>
+	        </div>
+	        <div class="modal-body">
+	          <input type="hidden" name="id" id="edit-id" />
+								<div class="form-group">
+									<label for="edit-nombre">Nombre</label>
+									<p class="form-control-plaintext" id="edit-nombre"></p>
+								</div>
+								<div class="form-group">
+									<label for="edit-email">Email</label>
+									<p class="form-control-plaintext" id="edit-email"></p>
+								</div>
+								<div class="form-group">
+									<label for="edit-direccion">Dirección</label>
+									<p class="form-control-plaintext" id="edit-direccion"></p>
+								</div>
+	          <div class="form-group">
+	            <label for="edit-estado">Estado</label>
+	            <select class="form-control" id="edit-estado" name="estado">
+	              <option value="">--Seleccione--</option>
+	              <% for (EstadoLector st : EstadoLector.values()) { %>
+	                <option value="<%= st.name() %>"><%= st.name() %></option>
+	              <% } %>
+	            </select>
+	          </div>
+	          <div class="form-group">
+	            <label for="edit-zona">Zona</label>
+	            <input type="text" class="form-control" id="edit-zona" name="zona" />
+	          </div>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+	          <button type="submit" class="btn btn-primary">Guardar</button>
+	        </div>
+	      </form>
+	    </div>
+	  </div>
+	</div>
+
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
@@ -154,5 +215,63 @@
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
 		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
 		crossorigin="anonymous"></script>
+
+	<script>
+	// Rellenar y mostrar modal de edición
+	$(document).on('click', '.edit-btn', function(e) {
+		e.preventDefault();
+		var btn = $(this);
+		$('#edit-id').val(btn.data('id'));
+		$('#edit-nombre').text(btn.data('nombre'));
+		$('#edit-email').text(btn.data('email'));
+		$('#edit-direccion').text(btn.data('direccion'));
+		$('#edit-estado').val(btn.data('estado'));
+		$('#edit-zona').val(btn.data('zona'));
+		$('#editModal').modal('show');
+	});
+
+	// Envío AJAX del formulario de edición
+	$('#editForm').on('submit', function(e) {
+		e.preventDefault();
+		var form = this;
+		var url = '<%= request.getContextPath() %>/editarUsuario';
+		var formData = new URLSearchParams(new FormData(form));
+		fetch(url, {
+			method: 'POST',
+			headers: { 'Accept': 'application/json' },
+			body: formData
+		}).then(function(res) {
+			return res.json();
+		}).then(function(data) {
+			if (data && data.success) {
+				// Actualizar fila en la tabla
+				var id = $('#edit-id').val();
+				var row = $("a.edit-btn[data-id='" + id + "']").closest('tr');
+									if (row.length) {
+										// Solo actualizamos estado y zona (nombre/email/dirección no editables)
+										var estadoVal = $('#edit-estado').val();
+										var estadoHtml = '<span class="badge badge-secondary">Desconocido</span>';
+										if (estadoVal === 'ACTIVO') estadoHtml = '<span class="badge badge-success">Activo</span>';
+										if (estadoVal === 'SUSPENDIDO') estadoHtml = '<span class="badge badge-danger">Suspendido</span>';
+										row.find('td').eq(5).html(estadoHtml);
+										// Zona
+										row.find('td').eq(6).text($('#edit-zona').val() || 'N/A');
+										// Actualizar atributos del botón (solo estado/zona)
+										var btn = row.find('a.edit-btn');
+										btn.data('estado', $('#edit-estado').val());
+										btn.data('zona', $('#edit-zona').val());
+									}
+				$('#editModal').modal('hide');
+				// opcional: mostrar mensaje rápido
+				alert(data.message || 'Guardado');
+			} else {
+				alert((data && data.message) ? data.message : 'Error al guardar');
+			}
+		}).catch(function(err) {
+			console.error(err);
+			alert('Error de comunicación con el servidor');
+		});
+	});
+	</script>
 </body>
 </html>
