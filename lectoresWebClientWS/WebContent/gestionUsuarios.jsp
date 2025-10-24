@@ -167,6 +167,7 @@
 	        </div>
 	        <div class="modal-body">
 	          <input type="hidden" name="id" id="edit-id" />
+	          <input type="hidden" name="email" id="edit-email-hidden" />
 								<div class="form-group">
 									<label for="edit-nombre">Nombre</label>
 									<p class="form-control-plaintext" id="edit-nombre"></p>
@@ -182,7 +183,6 @@
 	          <div class="form-group">
 	            <label for="edit-estado">Estado</label>
 	            <select class="form-control" id="edit-estado" name="estado">
-	              <option value="">--Seleccione--</option>
 	              <% for (EstadoLector st : EstadoLector.values()) { %>
 	                <option value="<%= st.name() %>"><%= st.name() %></option>
 	              <% } %>
@@ -190,7 +190,13 @@
 	          </div>
 	          <div class="form-group">
 	            <label for="edit-zona">Zona</label>
-	            <input type="text" class="form-control" id="edit-zona" name="zona" />
+	            <select class="form-control" id="edit-zona" name="zona">
+	              <option value="BIBLIOTECA CENTRAL">BIBLIOTECA CENTRAL</option>
+	              <option value="SUCURSAL ESTE">SUCURSAL ESTE</option>
+	              <option value="SUCURSAL OESTE">SUCURSAL OESTE</option>
+	              <option value="BIBLIOTECA INFANTIL">BIBLIOTECA INFANTIL</option>
+	              <option value="ARCHIVO GENERAL">ARCHIVO GENERAL</option>
+	            </select>
 	          </div>
 	        </div>
 	        <div class="modal-footer">
@@ -222,6 +228,7 @@
 		e.preventDefault();
 		var btn = $(this);
 		$('#edit-id').val(btn.data('id'));
+		$('#edit-email-hidden').val(btn.data('email')); // Establecer email en campo oculto
 		$('#edit-nombre').text(btn.data('nombre'));
 		$('#edit-email').text(btn.data('email'));
 		$('#edit-direccion').text(btn.data('direccion'));

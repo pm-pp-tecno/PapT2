@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,46 +26,55 @@ public class EditarUsuarioServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
 
-        String id = request.getParameter("id");
-        String nombre = request.getParameter("nombre");
         String email = request.getParameter("email");
-        String direccion = request.getParameter("direccion");
         String estado = request.getParameter("estado");
         String zona = request.getParameter("zona");
 
         boolean success = false;
         String message = "";
 
-        try {
-            ControladorPublishService service = new ControladorPublishService();
-            ControladorPublish controlador = service.getControladorPublishPort();
-
-            // Cambiar zona si se proporcionó
-            if (zona != null && !zona.trim().isEmpty() && id != null && !id.trim().isEmpty()) {
-                controlador.cambiarZonaLector(id, zona);
-            }
-
-            // Cambiar estado: el servicio expone suspenderLector; para activar no hay método
-            if (estado != null && id != null && !id.trim().isEmpty()) {
-                if ("SUSPENDIDO".equalsIgnoreCase(estado)) {
-                    // suspenderLector toma (id, motivo)
-                    controlador.suspenderLector(id, "Suspendido desde web");
-                } else if ("ACTIVO".equalsIgnoreCase(estado)) {
-                    // No existe operación pública para reactivar en el WSDL generado.
-                    // De momento no hacemos nada y devolvemos mensaje informativo.
-                }
-            }
-
-            // Nota: el servicio SOAP disponible en este cliente no ofrece métodos para
-            // actualizar nombre/email/direccion; por eso no se llaman aquí.
-
-            success = true;
-            message = "Datos actualizados correctamente.";
-
-        } catch (Exception e) {
+        // Validar parámetros requeridos - usar email como identificador
+        if (email == null || email.trim().isEmpty()) {
             success = false;
-            message = "Error al actualizar: " + e.getMessage();
-            e.printStackTrace();
+            message = "Email del lector es requerido.";
+        } else {
+            try {
+                ControladorPublishService service = new ControladorPublishService();
+                ControladorPublish controlador = service.getControladorPublishPort();
+
+                // Cambiar zona si se proporcionó
+                if (zona != null && !zona.trim().isEmpty()) {
+                    controlador.cambiarZonaLector(email, zona);
+                    message = "Zona actualizada correctamente.";
+                }
+
+                // Cambiar estado si se proporcionó
+                if (estado != null && !estado.trim().isEmpty()) {
+                    if ("SUSPENDIDO".equalsIgnoreCase(estado)) {
+                        controlador.suspenderLector(email, estado);
+                        message += (message.isEmpty() ? "" : " ") + "Estado actualizado a SUSPENDIDO.";
+                    } else if ("ACTIVO".equalsIgnoreCase(estado)) {
+                        // Para reactivar, también usamos suspenderLector pero con estado ACTIVO
+                        controlador.suspenderLector(email, estado);
+                        message += (message.isEmpty() ? "" : " ") + "Estado actualizado a ACTIVO.";
+                    }
+                }
+
+                // Si no se proporcionó zona ni estado, informar
+                if ((zona == null || zona.trim().isEmpty()) && (estado == null || estado.trim().isEmpty())) {
+                    message = "No se proporcionaron datos para actualizar.";
+                }
+
+                success = true;
+                if (message.trim().isEmpty()) {
+                    message = "Datos actualizados correctamente.";
+                }
+
+            } catch (Exception e) {
+                success = false;
+                message = "Error al actualizar: " + e.getMessage();
+                e.printStackTrace();
+            }
         }
 
         // Construir respuesta JSON simple
