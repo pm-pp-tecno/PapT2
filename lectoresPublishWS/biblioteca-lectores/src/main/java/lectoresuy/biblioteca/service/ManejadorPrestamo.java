@@ -67,9 +67,37 @@ public class ManejadorPrestamo {
     }
 
     public void actualizarEstadoPrestamo(Long prestamoId, EstadoPrestamo nuevoEstado) {
+        System.out.println("=== ManejadorPrestamo.actualizarEstadoPrestamo ===");
+        System.out.println("ID del préstamo: " + prestamoId);
+        System.out.println("Nuevo estado: " + nuevoEstado);
+        
+        try {
+            Prestamo prestamo = prestamoDAO.encontrarPorId(prestamoId);
+            System.out.println("Préstamo encontrado: " + (prestamo != null));
+            
+            if (prestamo != null) {
+                System.out.println("Estado anterior: " + prestamo.getEstado());
+                prestamo.setEstado(nuevoEstado);
+                System.out.println("Estado actualizado a: " + prestamo.getEstado());
+                
+                prestamoDAO.actualizar(prestamo);
+                System.out.println("Préstamo actualizado en la base de datos exitosamente");
+            } else {
+                System.out.println("ERROR: No se encontró el préstamo con ID: " + prestamoId);
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR en actualizarEstadoPrestamo: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        System.out.println("=== FIN ManejadorPrestamo.actualizarEstadoPrestamo ===");
+    }
+
+    public void actualizarPrestamo(Long prestamoId, EstadoPrestamo estado, Date fechaDevolucionEstimada) {
         Prestamo prestamo = prestamoDAO.encontrarPorId(prestamoId);
         if (prestamo != null) {
-            prestamo.setEstado(nuevoEstado);
+            prestamo.setEstado(estado);
+            prestamo.setFechaDevolucionEstimada(fechaDevolucionEstimada);
             prestamoDAO.actualizar(prestamo);
         }
     }

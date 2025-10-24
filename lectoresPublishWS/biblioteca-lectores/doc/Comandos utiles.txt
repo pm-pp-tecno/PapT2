@@ -1,5 +1,17 @@
 
 
+24/10/2025
+
+Mas facil:
+
+en lectores: 
+mvn clean compile exec:java
+
+
+en client web:
+mvn clean compile tomcat7:run
+
+
 
 22/10/2025
 
@@ -18,11 +30,9 @@ http://127.0.0.1:8081/lectoresuy?wsdl
 
 Se cierra con Ctrl + c
 
-Cuando hay cambios:
-mvn clean compile
-
 Me dijo la ia, pero creo que no es necesario:
 mvn package
+
 
 Luego en la carpeta lectoresWebClientWS:
 

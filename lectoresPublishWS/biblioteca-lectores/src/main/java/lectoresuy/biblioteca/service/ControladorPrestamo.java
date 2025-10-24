@@ -133,6 +133,11 @@ public class ControladorPrestamo implements IControladorPrestamo {
     }
 
     @Override
+    public void actualizarPrestamo(Long id, EstadoPrestamo estado, Date fechaDevolucionEstimada) {
+        manejadorPrestamo.actualizarPrestamo(id, estado, fechaDevolucionEstimada);
+    }
+
+    @Override
     public void actualizarInformacionPrestamo(DtPrestamo prestamo) {
         manejadorPrestamo.actualizarInformacionPrestamo(prestamo);
     }

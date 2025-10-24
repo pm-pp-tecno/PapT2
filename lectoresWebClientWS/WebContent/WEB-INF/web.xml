@@ -66,6 +66,34 @@
         <url-pattern>/filtroMateriales</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>GestionPrestamosServlet</servlet-name>
+        <servlet-class>servlets.GestionPrestamosServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GestionPrestamosServlet</servlet-name>
+        <url-pattern>/gestionPrestamos</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AgregarPrestamoServlet</servlet-name>
+        <servlet-class>servlets.AgregarPrestamoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AgregarPrestamoServlet</servlet-name>
+        <url-pattern>/agregarPrestamo</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>EditarPrestamoServlet</servlet-name>
+        <servlet-class>servlets.EditarPrestamoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EditarPrestamoServlet</servlet-name>
+        <url-pattern>/editarPrestamo</url-pattern>
+    </servlet-mapping>
+
+
     <!-- Session Configuration -->
     <session-config>
         <session-timeout>30</session-timeout>

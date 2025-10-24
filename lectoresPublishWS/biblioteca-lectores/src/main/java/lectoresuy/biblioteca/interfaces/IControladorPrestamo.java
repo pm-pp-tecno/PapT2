@@ -15,6 +15,8 @@ public interface IControladorPrestamo {
 
     void actualizarEstadoPrestamo(Long id, EstadoPrestamo nuevoEstado);
 
+    void actualizarPrestamo(Long id, EstadoPrestamo estado, Date fechaDevolucionEstimada);
+
     void actualizarInformacionPrestamo(DtPrestamo prestamo);
 
     List<DtPrestamo> listarPrestamosLector(DtLector lector);

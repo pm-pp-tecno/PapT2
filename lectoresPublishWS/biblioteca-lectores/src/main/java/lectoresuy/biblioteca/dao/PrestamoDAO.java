@@ -26,23 +26,49 @@ public class PrestamoDAO {
     }
 
     public Prestamo encontrarPorId(Long id) {
+        System.out.println("=== PrestamoDAO.encontrarPorId ===");
+        System.out.println("Buscando préstamo con ID: " + id);
+        
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Prestamo.class, id);
+            Prestamo prestamo = session.get(Prestamo.class, id);
+            System.out.println("Préstamo encontrado: " + (prestamo != null));
+            if (prestamo != null) {
+                System.out.println("Estado actual del préstamo: " + prestamo.getEstado());
+            }
+            return prestamo;
+        } catch (Exception e) {
+            System.out.println("ERROR en PrestamoDAO.encontrarPorId: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
     }
 
     public void actualizar(Prestamo prestamo) {
+        System.out.println("=== PrestamoDAO.actualizar ===");
+        System.out.println("ID del préstamo: " + prestamo.getId());
+        System.out.println("Estado del préstamo: " + prestamo.getEstado());
+        
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            System.out.println("Sesión de Hibernate abierta");
             transaction = session.beginTransaction();
+            System.out.println("Transacción iniciada");
+            
             session.update(prestamo);
+            System.out.println("Préstamo actualizado en la sesión");
+            
             transaction.commit();
+            System.out.println("Transacción confirmada - cambios guardados en BD");
         } catch (Exception e) {
+            System.out.println("ERROR en PrestamoDAO.actualizar: " + e.getMessage());
+            e.printStackTrace();
             if (transaction != null) {
                 transaction.rollback();
+                System.out.println("Transacción revertida debido al error");
             }
-            e.printStackTrace();
+            throw e; // Re-lanzar la excepción para que sea capturada en el nivel superior
         }
+        System.out.println("=== FIN PrestamoDAO.actualizar ===");
     }
     
     public List<Prestamo> encontrarTodos() {

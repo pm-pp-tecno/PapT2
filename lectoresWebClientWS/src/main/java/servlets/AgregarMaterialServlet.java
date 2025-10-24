@@ -2,17 +2,10 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import publicadores.ControladorPublish;
 import publicadores.ControladorPublishService;
@@ -55,10 +48,8 @@ public class AgregarMaterialServlet extends HttpServlet {
                 ControladorPublishService service = new ControladorPublishService();
                 ControladorPublish controlador = service.getControladorPublishPort();
 
-                // Convertir fecha
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date fechaIngreso = dateFormat.parse(fecha);
-                XMLGregorianCalendar fechaXML = convertirDateToXMLGregorianCalendar(fechaIngreso);
+                // La fecha ya está en formato String correcto (yyyy-MM-dd)
+                String fechaString = fecha;
 
                 if ("LIBRO".equals(tipo)) {
                     // Validar campos específicos de libro
@@ -75,7 +66,7 @@ public class AgregarMaterialServlet extends HttpServlet {
                                 success = false;
                                 message = "La cantidad de páginas debe ser mayor a 0.";
                             } else {
-                                controlador.agregarLibro(titulo.trim(), cantidadPaginas, fechaXML);
+                                controlador.agregarLibro(titulo.trim(), cantidadPaginas, fechaString);
                                 message = "Libro agregado correctamente: " + titulo + " (" + cantidadPaginas + " páginas)";
                                 success = true;
                             }
@@ -100,7 +91,7 @@ public class AgregarMaterialServlet extends HttpServlet {
                                 message = "El peso debe ser mayor o igual a 0.";
                             } else {
                                 controlador.agregarArticulo(descripcion.trim(), pesoValue, 
-                                    dimensiones != null ? dimensiones.trim() : "", fechaXML);
+                                    dimensiones != null ? dimensiones.trim() : "", fechaString);
                                 message = "Artículo agregado correctamente: " + descripcion + " (" + pesoValue + " kg)";
                                 success = true;
                             }
@@ -114,9 +105,6 @@ public class AgregarMaterialServlet extends HttpServlet {
                     message = "Tipo de material no válido. Debe ser LIBRO o ARTICULO.";
                 }
 
-            } catch (ParseException e) {
-                success = false;
-                message = "La fecha debe tener el formato correcto (yyyy-MM-dd).";
             } catch (Exception e) {
                 success = false;
                 String errorMsg = e.getMessage();
@@ -148,9 +136,4 @@ public class AgregarMaterialServlet extends HttpServlet {
         return s.replace("\\","\\\\").replace("\"","\\\"").replace("\n","\\n");
     }
 
-    private XMLGregorianCalendar convertirDateToXMLGregorianCalendar(Date date) throws Exception {
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTime(date);
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
-    }
 }
