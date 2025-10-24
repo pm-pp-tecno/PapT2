@@ -56,4 +56,8 @@ public class Libro extends Material {
     public DtMaterial getDtMaterial() {
         return new DtLibro(this.getId(), this.getTitulo(), Integer.parseInt(this.getCantidadPaginas()), this.getFechaIngreso());
     }
+
+    public DtLibro getDtLibro() {
+        return new DtLibro(this.getId(), this.getTitulo(), Integer.parseInt(this.getCantidadPaginas()), this.getFechaIngreso());
+    }
 }

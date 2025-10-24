@@ -18,16 +18,18 @@ http://127.0.0.1:8081/lectoresuy?wsdl
 
 Se cierra con Ctrl + c
 
-Desde src en WebClient (solo una vez, ya no se precisa):
-wsimport -keep -p publicadores http://127.0.0.1:8081/lectoresuy?wsdl
-
 Cuando hay cambios:
 mvn clean compile
 
 Me dijo la ia, pero creo que no es necesario:
 mvn package
 
-Luego correr el servidor tomcat en la carpeta lectoresWebClientWS:
+Luego en la carpeta lectoresWebClientWS:
+
+Cuando hay cambios (incluso para generar los wsimport):
+mvn clean compile
+
+correr el servidor tomcat:
 mvn tomcat7:run
 
 
@@ -40,11 +42,19 @@ Página JSP:
 http://localhost:8080/lectores-web/
 
 
+Notas: 
+Este ya fue:
+Desde src en WebClient (solo una vez, ya no se precisa):
+wsimport -keep -p publicadores http://127.0.0.1:8081/lectoresuy?wsdl <--- No va mas!!!!
 
-Nuevos:
+Ahora es con maven. Se ejecuta al compilar todo el proyecto:
+mvn clean install
 
-en lectoresWebClientWS:
+O simplemente los wsimport asi:
 mvn jaxws:wsimport
+
+Pero no hace falta, al tirar mvn clean compile en webClient ya genera los archivos.
+
 
 
 

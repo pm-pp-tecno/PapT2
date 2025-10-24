@@ -68,4 +68,8 @@ public class Articulo extends Material {
     public DtMaterial getDtMaterial() {
         return new DtArticulo(this.getId(), this.getDescripcion(), this.getPeso(), this.getDimensiones(), this.getFechaIngreso());
     }
+
+    public DtArticulo getDtArticulo() {
+        return new DtArticulo(this.getId(), this.getDescripcion(), this.getPeso(), this.getDimensiones(), this.getFechaIngreso());
+    }
 }

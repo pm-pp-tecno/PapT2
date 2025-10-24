@@ -4,6 +4,7 @@ package publicadores;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -34,6 +35,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "cantidadPrestamosPendientes",
     "fechaIngreso",
     "id"
+})
+@XmlSeeAlso({
+    DtLibro.class,
+    DtArticulo.class
 })
 public abstract class DtMaterial {
 

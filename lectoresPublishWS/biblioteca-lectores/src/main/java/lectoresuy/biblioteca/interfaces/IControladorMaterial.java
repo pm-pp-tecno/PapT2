@@ -1,19 +1,11 @@
 package lectoresuy.biblioteca.interfaces;
 
-import java.util.ArrayList;
 import java.util.Date;
 
-
-import lectoresuy.biblioteca.entidades.Lector.EstadoLector;
-import lectoresuy.biblioteca.excepciones.LectorRepetidoExcepcion;
-import lectoresuy.biblioteca.excepciones.BibliotecarioRepetidoExcepcion;
-
 // Pasamos al lector o cada campo?
-import lectoresuy.biblioteca.datatypes.DtLector;
 import lectoresuy.biblioteca.datatypes.DtLibro;
 import lectoresuy.biblioteca.datatypes.DtArticulo;
 import lectoresuy.biblioteca.datatypes.DtMaterial;
-import lectoresuy.biblioteca.datatypes.DtPrestamo;
 
 import java.util.List;
 
@@ -31,6 +23,20 @@ public interface IControladorMaterial {
 	public void agregarArticulo(String descripcion, float peso, String dimensiones, Date fechaRegistro);
 
 	public List<DtMaterial> listarMateriales();
+
+	public List<DtLibro> listarLibros();
+
+	public List<DtArticulo> listarArticulos();
+
+	public void actualizarLibro(Long id, String titulo, Integer cantidadPaginas);
+
+	public void actualizarArticulo(Long id, String descripcion, Double peso, String dimensiones);
+
+	public void agregarLibro(String titulo, Integer cantidadPaginas, Date fechaIngreso);
+
+	public void agregarArticulo(String descripcion, Double peso, String dimensiones, Date fechaIngreso);
+
+	public List<DtMaterial> filtrarMaterialesPorFecha(Date fechaDesde, Date fechaHasta);
 
 	public List<DtMaterial> listarDonacionesPorFecha(Date fechaInicio, Date fechaFin);
 }

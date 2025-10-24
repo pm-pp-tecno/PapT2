@@ -22,12 +22,48 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>GestionMaterialesServlet</servlet-name>
+        <servlet-class>servlets.GestionMaterialesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GestionMaterialesServlet</servlet-name>
+        <url-pattern>/gestionMateriales</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>EditarUsuarioServlet</servlet-name>
         <servlet-class>servlets.EditarUsuarioServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>EditarUsuarioServlet</servlet-name>
         <url-pattern>/editarUsuario</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>EditarMaterialServlet</servlet-name>
+        <servlet-class>servlets.EditarMaterialServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EditarMaterialServlet</servlet-name>
+        <url-pattern>/editarMaterial</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AgregarMaterialServlet</servlet-name>
+        <servlet-class>servlets.AgregarMaterialServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AgregarMaterialServlet</servlet-name>
+        <url-pattern>/agregarMaterial</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>FiltroMaterialesServlet</servlet-name>
+        <servlet-class>servlets.FiltroMaterialesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FiltroMaterialesServlet</servlet-name>
+        <url-pattern>/filtroMateriales</url-pattern>
     </servlet-mapping>
 
     <!-- Session Configuration -->

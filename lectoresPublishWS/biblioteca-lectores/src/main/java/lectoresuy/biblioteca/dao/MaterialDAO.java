@@ -26,6 +26,20 @@ public class MaterialDAO {
         }
     }
 
+    public void actualizar(Material material) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.update(material);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
     public Material encontrarPorId(Long id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.get(Material.class, id);

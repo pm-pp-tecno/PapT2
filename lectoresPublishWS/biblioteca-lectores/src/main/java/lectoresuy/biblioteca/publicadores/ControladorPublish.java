@@ -14,6 +14,8 @@ import javax.xml.ws.WebServiceException;
 import lectoresuy.biblioteca.configuraciones.WebServiceConfiguracion;
 import lectoresuy.biblioteca.datatypes.DtLector;
 import lectoresuy.biblioteca.datatypes.DtMaterial;
+import lectoresuy.biblioteca.datatypes.DtLibro;
+import lectoresuy.biblioteca.datatypes.DtArticulo;
 import lectoresuy.biblioteca.datatypes.DtPrestamo;
 import lectoresuy.biblioteca.entidades.Lector.EstadoLector;
 import lectoresuy.biblioteca.interfaces.Fabrica;
@@ -106,6 +108,64 @@ public class ControladorPublish {
 	public DtMaterial[] listarMateriales() {
 		List<DtMaterial> lista = iconM.listarMateriales();
 		return lista.toArray(new DtMaterial[0]);
+	}
+
+	@WebMethod
+	public DtLibro[] listarLibros() {
+		List<DtLibro> lista = iconM.listarLibros();
+		return lista.toArray(new DtLibro[0]);
+	}
+
+	@WebMethod
+	public DtArticulo[] listarArticulos() {
+		List<DtArticulo> lista = iconM.listarArticulos();
+		return lista.toArray(new DtArticulo[0]);
+	}
+
+	@WebMethod
+	public void actualizarLibro(Long id, String titulo, Integer cantidadPaginas) {
+		try {
+			iconM.actualizarLibro(id, titulo, cantidadPaginas);
+		} catch (Exception ex) {
+			throw new WebServiceException("Error al actualizar libro: " + ex.getMessage(), ex);
+		}
+	}
+
+	@WebMethod
+	public void actualizarArticulo(Long id, String descripcion, Double peso, String dimensiones) {
+		try {
+			iconM.actualizarArticulo(id, descripcion, peso, dimensiones);
+		} catch (Exception ex) {
+			throw new WebServiceException("Error al actualizar artículo: " + ex.getMessage(), ex);
+		}
+	}
+
+	@WebMethod
+	public void agregarLibro(String titulo, Integer cantidadPaginas, Date fechaIngreso) {
+		try {
+			iconM.agregarLibro(titulo, cantidadPaginas, fechaIngreso);
+		} catch (Exception ex) {
+			throw new WebServiceException("Error al agregar libro: " + ex.getMessage(), ex);
+		}
+	}
+
+	@WebMethod
+	public void agregarArticulo(String descripcion, Double peso, String dimensiones, Date fechaIngreso) {
+		try {
+			iconM.agregarArticulo(descripcion, peso, dimensiones, fechaIngreso);
+		} catch (Exception ex) {
+			throw new WebServiceException("Error al agregar artículo: " + ex.getMessage(), ex);
+		}
+	}
+
+	@WebMethod
+	public DtMaterial[] filtrarMaterialesPorFecha(Date fechaDesde, Date fechaHasta) {
+		try {
+			List<DtMaterial> lista = iconM.filtrarMaterialesPorFecha(fechaDesde, fechaHasta);
+			return lista.toArray(new DtMaterial[0]);
+		} catch (Exception ex) {
+			throw new WebServiceException("Error al filtrar materiales: " + ex.getMessage(), ex);
+		}
 	}
 
 	/*

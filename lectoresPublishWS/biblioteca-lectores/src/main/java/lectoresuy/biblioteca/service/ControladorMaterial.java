@@ -9,6 +9,8 @@ import lectoresuy.biblioteca.service.ManejadorMaterial;
 import lectoresuy.biblioteca.interfaces.IControladorMaterial;
 import lectoresuy.biblioteca.util.HibernateUtil;
 import lectoresuy.biblioteca.datatypes.DtMaterial;
+import lectoresuy.biblioteca.datatypes.DtLibro;
+import lectoresuy.biblioteca.datatypes.DtArticulo;
 import lectoresuy.biblioteca.datatypes.DtPrestamo;
 
 import java.util.List;
@@ -72,6 +74,116 @@ public class ControladorMaterial implements IControladorMaterial {
 		try {
 			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
 			resultado = mM.listarMateriales();
+		} finally {
+			em.close();
+		}
+		return resultado;
+	}
+
+	@Override
+	public List<DtLibro> listarLibros() {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		List<DtLibro> resultado;
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			resultado = mM.listarLibros();
+		} finally {
+			em.close();
+		}
+		return resultado;
+	}
+
+	@Override
+	public List<DtArticulo> listarArticulos() {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		List<DtArticulo> resultado;
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			resultado = mM.listarArticulos();
+		} finally {
+			em.close();
+		}
+		return resultado;
+	}
+
+	@Override
+	public void actualizarLibro(Long id, String titulo, Integer cantidadPaginas) {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		em.getTransaction().begin();
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			mM.actualizarLibro(id, titulo, cantidadPaginas);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw e;
+		} finally {
+			em.close();
+		}
+	}
+
+	@Override
+	public void actualizarArticulo(Long id, String descripcion, Double peso, String dimensiones) {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		em.getTransaction().begin();
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			mM.actualizarArticulo(id, descripcion, peso, dimensiones);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw e;
+		} finally {
+			em.close();
+		}
+	}
+
+	@Override
+	public void agregarLibro(String titulo, Integer cantidadPaginas, Date fechaIngreso) {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		em.getTransaction().begin();
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			mM.agregarLibro(titulo, cantidadPaginas, fechaIngreso);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw e;
+		} finally {
+			em.close();
+		}
+	}
+
+	@Override
+	public void agregarArticulo(String descripcion, Double peso, String dimensiones, Date fechaIngreso) {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		em.getTransaction().begin();
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			mM.agregarArticulo(descripcion, peso, dimensiones, fechaIngreso);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw e;
+		} finally {
+			em.close();
+		}
+	}
+
+	@Override
+	public List<DtMaterial> filtrarMaterialesPorFecha(Date fechaDesde, Date fechaHasta) {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		List<DtMaterial> resultado;
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			resultado = mM.filtrarMaterialesPorFecha(fechaDesde, fechaHasta);
 		} finally {
 			em.close();
 		}
