@@ -33,6 +33,18 @@ public class EditarMaterialServlet extends HttpServlet {
         String descripcion = request.getParameter("descripcion");
         String peso = request.getParameter("peso");
         String dimensiones = request.getParameter("dimensiones");
+        String fecha = request.getParameter("fecha");
+        
+        // Logs para debugging
+        System.out.println("=== EDITAR MATERIAL - PARAMETROS RECIBIDOS ===");
+        System.out.println("ID: " + id);
+        System.out.println("Tipo: " + tipo);
+        System.out.println("Título: " + titulo);
+        System.out.println("Páginas: " + paginas);
+        System.out.println("Descripción: " + descripcion);
+        System.out.println("Peso: " + peso);
+        System.out.println("Dimensiones: " + dimensiones);
+        System.out.println("Fecha: " + fecha);
 
         boolean success = false;
         String message = "";
@@ -68,6 +80,10 @@ public class EditarMaterialServlet extends HttpServlet {
                                 message = "La cantidad de páginas debe ser mayor a 0.";
                             } else {
                                 controlador.actualizarLibro(materialId, titulo.trim(), cantidadPaginas);
+                                // Actualizar fecha por separado
+                                if (fecha != null && !fecha.trim().isEmpty()) {
+                                    controlador.actualizarFechaMaterial(materialId, fecha.trim());
+                                }
                                 message = "Libro actualizado correctamente: " + titulo + " (" + cantidadPaginas + " páginas)";
                                 success = true;
                             }
@@ -92,6 +108,10 @@ public class EditarMaterialServlet extends HttpServlet {
                                 message = "El peso debe ser mayor o igual a 0.";
                             } else {
                                 controlador.actualizarArticulo(materialId, descripcion.trim(), pesoValue, dimensiones != null ? dimensiones.trim() : "");
+                                // Actualizar fecha por separado
+                                if (fecha != null && !fecha.trim().isEmpty()) {
+                                    controlador.actualizarFechaMaterial(materialId, fecha.trim());
+                                }
                                 message = "Artículo actualizado correctamente: " + descripcion + " (" + pesoValue + " kg)";
                                 success = true;
                             }

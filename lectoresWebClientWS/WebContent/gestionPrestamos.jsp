@@ -204,6 +204,7 @@
 				</div>
 				<form id="agregarPrestamoForm">
 					<div class="modal-body">
+						<input type="hidden" id="agregar-idMaterial" name="idMaterial" value="">
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
@@ -237,8 +238,11 @@
 											if (lectores != null) {
 												for (DtLector lector : lectores) {
 													String nombreCompleto = lector.getNombre() + " (" + lector.getEmail() + ")";
+													boolean suspendido = lector.getNombre().contains("(SUSPENDIDO)");
+													String optionClass = suspendido ? "disabled" : "";
+													String optionStyle = suspendido ? "color: #999;" : "";
 										%>
-										<option value="<%= lector.getEmail() %>"><%= nombreCompleto %></option>
+										<option value="<%= lector.getEmail() %>" class="<%= optionClass %>" style="<%= optionStyle %>" <%= suspendido ? "disabled" : "" %>><%= nombreCompleto %></option>
 										<%
 												}
 											}
@@ -354,16 +358,46 @@
 		// Manejar formulario de agregar préstamo
 		$('#agregarPrestamoForm').on('submit', function(e) {
 			e.preventDefault();
+			console.log("*** FORMULARIO AGREGAR PRESTAMO ENVIADO ***");
 			
-			var formData = new FormData(this);
+			// Asegurar que el ID del material esté en el campo oculto
+			var idMaterial = $('#agregar-material').val();
+			$('#agregar-idMaterial').val(idMaterial);
+			console.log("ID Material final:", idMaterial);
 			
-			fetch('/agregarPrestamo', {
+			// Crear objeto JSON con los datos del formulario
+			var idMaterial = $('#agregar-idMaterial').val();
+			var emailLector = $('#agregar-lector').val();
+			var numeroBibliotecario = $('#agregar-bibliotecario').val();
+			var fechaDevolucion = $('#agregar-fechaDevolucion').val();
+			
+			console.log("Valores capturados:");
+			console.log("idMaterial:", idMaterial);
+			console.log("emailLector:", emailLector);
+			console.log("numeroBibliotecario:", numeroBibliotecario);
+			console.log("fechaDevolucion:", fechaDevolucion);
+			
+			var jsonData = {
+				idMaterial: idMaterial,
+				emailLector: emailLector,
+				numeroBibliotecario: numeroBibliotecario,
+				fechaDevolucion: fechaDevolucion
+			};
+			console.log("JSON creado:", jsonData);
+			
+			console.log("Enviando petición a: agregarPrestamo");
+			fetch('agregarPrestamo', {
 				method: 'POST',
-				headers: { 'Accept': 'application/json' },
-				body: formData
+				headers: { 
+					'Content-Type': 'application/json',
+					'Accept': 'application/json' 
+				},
+				body: JSON.stringify(jsonData)
 			}).then(function(res) {
+				console.log("Respuesta recibida:", res);
 				return res.json();
 			}).then(function(data) {
+				console.log("Datos de respuesta:", data);
 				if (data && data.success) {
 					$('#agregarPrestamoModal').modal('hide');
 					$('#agregarPrestamoForm')[0].reset();
@@ -372,11 +406,16 @@
 						location.reload();
 					}, 1500);
 				} else {
-					alert((data && data.message) ? data.message : 'Error al agregar el préstamo');
+					var errorMsg = (data && data.message) ? data.message : 'Error al agregar el préstamo';
+					if (errorMsg.includes('conexión') || errorMsg.includes('base de datos')) {
+						mostrarErrorConexion(errorMsg);
+					} else {
+						mostrarErrorNegocio(errorMsg);
+					}
 				}
 			}).catch(function(err) {
-				console.error(err);
-				alert('Error de comunicación con el servidor');
+				console.error('*** ERROR EN AGREGAR PRESTAMO ***:', err);
+				mostrarErrorConexion('Error de comunicación con el servidor');
 			});
 		});
 
@@ -493,7 +532,7 @@
 					if (errorMsg.includes('conexión') || errorMsg.includes('base de datos')) {
 						mostrarErrorConexion(errorMsg);
 					} else {
-						alert(errorMsg);
+						mostrarErrorNegocio(errorMsg);
 					}
 				}
 			}).catch(function(err) {
@@ -502,23 +541,23 @@
 			});
 		});
 
-		// Función para mostrar mensaje de éxito
-		function mostrarMensajeExito(mensaje) {
-			var alertDiv = $('<div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">' +
-				'<strong>Éxito!</strong> ' + mensaje +
-				'<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-				'<span aria-hidden="true">&times;</span></button></div>');
-			
-			$('body').append(alertDiv);
-			
-			setTimeout(function() {
-				alertDiv.alert('close');
-			}, 3000);
-		}
+	// Función para mostrar mensaje de éxito
+	function mostrarMensajeExito(mensaje) {
+		var alertDiv = $('<div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: 90%; min-width: 300px;">' +
+			'<strong>Éxito!</strong> ' + mensaje +
+			'<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+			'<span aria-hidden="true">&times;</span></button></div>');
+		
+		$('body').append(alertDiv);
+		
+		setTimeout(function() {
+			alertDiv.alert('close');
+		}, 3000);
+	}
 
 		// Función para mostrar error de conexión con opción de reintentar
 		function mostrarErrorConexion(mensaje) {
-			var errorDiv = $('<div class="alert alert-warning alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px;">' +
+			var errorDiv = $('<div class="alert alert-warning alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: 90%; min-width: 300px;">' +
 				'<strong>Error de Conexión!</strong><br>' + mensaje + '<br><br>' +
 				'<button type="button" class="btn btn-sm btn-warning mr-2" onclick="reintentarOperacion()">Reintentar</button>' +
 				'<button type="button" class="btn btn-sm btn-secondary" onclick="$(this).closest(\'.alert\').alert(\'close\')">Cerrar</button>' +
@@ -544,6 +583,21 @@
 			setTimeout(function() {
 				location.reload();
 			}, 2000);
+		}
+
+		// Función para mostrar errores de negocio con Bootstrap
+		function mostrarErrorNegocio(mensaje) {
+			var errorDiv = $('<div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: 90%; min-width: 300px;">' +
+				'<strong>Error de Negocio!</strong><br>' + mensaje + '<br><br>' +
+				'<button type="button" class="btn btn-sm btn-danger" onclick="$(this).closest(\'.alert\').alert(\'close\')">Entendido</button>' +
+				'</div>');
+			
+			$('body').append(errorDiv);
+			
+			// Auto-ocultar después de 8 segundos
+			setTimeout(function() {
+				errorDiv.alert('close');
+			}, 8000);
 		}
 
 		// Función para actualizar la fila en la tabla después de editar
@@ -588,6 +642,7 @@
 				}, 1000);
 			}
 		}
+
 
 		// Función auxiliar para formatear fechas
 		function formatearFecha(fechaStr) {
@@ -679,6 +734,19 @@
 			}
 		%>
 
+		// Limpiar formulario al abrir el modal de nuevo préstamo
+		$('#agregarPrestamoModal').on('show.bs.modal', function() {
+			console.log('Limpiando formulario de nuevo préstamo...');
+			// Limpiar todos los campos del formulario
+			$('#agregarPrestamoForm')[0].reset();
+			// Limpiar el campo oculto del ID del material
+			$('#agregar-idMaterial').val('');
+			// Limpiar y deshabilitar el select de materiales
+			$('#agregar-material').empty().prop('disabled', true);
+			$('#agregar-material').append('<option value="">Primero seleccione el tipo</option>');
+			console.log('Formulario limpiado exitosamente');
+		});
+
 		// Manejar cambio de tipo de material
 		$(document).on('change', '#agregar-tipoMaterial', function() {
 			var tipo = $(this).val();
@@ -705,6 +773,13 @@
 				
 				selectMaterial.prop('disabled', false);
 			}
+		});
+
+		// Manejar cambio del select de material
+		$(document).on('change', '#agregar-material', function() {
+			var idMaterial = $(this).val();
+			$('#agregar-idMaterial').val(idMaterial);
+			console.log('ID Material seleccionado:', idMaterial);
 		});
 	</script>
 </body>

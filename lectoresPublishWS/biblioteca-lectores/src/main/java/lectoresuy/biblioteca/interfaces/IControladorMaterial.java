@@ -32,6 +32,13 @@ public interface IControladorMaterial {
 
 	public void actualizarArticulo(Long id, String descripcion, Double peso, String dimensiones);
 
+	public void actualizarLibroConFecha(Long id, String titulo, Integer cantidadPaginas, Date fechaIngreso);
+
+	public void actualizarArticuloConFecha(Long id, String descripcion, Double peso, String dimensiones, Date fechaIngreso);
+
+	public void actualizarFechaMaterial(Long id, Date fechaIngreso);
+
+
 	public void agregarLibro(String titulo, Integer cantidadPaginas, Date fechaIngreso);
 
 	public void agregarArticulo(String descripcion, Double peso, String dimensiones, Date fechaIngreso);

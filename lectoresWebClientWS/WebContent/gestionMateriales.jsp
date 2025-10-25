@@ -124,7 +124,6 @@
 											<th>Título/Descripción</th>
 											<th>Detalles</th>
 											<th>Fecha Ingreso</th>
-											<th>Préstamos Pendientes</th>
 											<th>Acciones</th>
 										</tr>
 									</thead>
@@ -152,17 +151,15 @@
 													%>
 													<td><%= fechaStr %></td>
 													<td>
-														<span class="badge badge-warning"><%= libro.getCantidadPrestamosPendientes() %></span>
-													</td>
-													<td>
-														<a href="#" 
-														   class="btn btn-sm btn-primary edit-btn"
-														   data-id='<%= libro.getId() %>'
-														   data-tipo='LIBRO'
-														   data-titulo='<%= libro.getTitulo() %>'
-														   data-paginas='<%= libro.getCantidadPaginas() %>'>
-														   Editar
-														</a>
+													<a href="#" 
+													   class="btn btn-sm btn-primary edit-btn"
+													   data-id='<%= libro.getId() %>'
+													   data-tipo='LIBRO'
+													   data-titulo='<%= libro.getTitulo() %>'
+													   data-paginas='<%= libro.getCantidadPaginas() %>'
+													   data-fecha='<%= fechaStr %>'>
+													   Editar
+													</a>
 													</td>
 												<% } else if (material instanceof DtArticulo) { %>
 													<% DtArticulo articulo = (DtArticulo) material; %>
@@ -185,18 +182,16 @@
 													%>
 													<td><%= fechaStr %></td>
 													<td>
-														<span class="badge badge-warning"><%= articulo.getCantidadPrestamosPendientes() %></span>
-													</td>
-													<td>
-														<a href="#" 
-														   class="btn btn-sm btn-primary edit-btn"
-														   data-id='<%= articulo.getId() %>'
-														   data-tipo='ARTICULO'
-														   data-descripcion='<%= articulo.getDescripcion() %>'
-														   data-peso='<%= articulo.getPeso() %>'
-														   data-dimensiones='<%= articulo.getDimensiones() %>'>
-														   Editar
-														</a>
+													<a href="#" 
+													   class="btn btn-sm btn-primary edit-btn"
+													   data-id='<%= articulo.getId() %>'
+													   data-tipo='ARTICULO'
+													   data-descripcion='<%= articulo.getDescripcion() %>'
+													   data-peso='<%= articulo.getPeso() %>'
+													   data-dimensiones='<%= articulo.getDimensiones() %>'
+													   data-fecha='<%= fechaStr %>'>
+													   Editar
+													</a>
 													</td>
 												<% } %>
 											</tr>
@@ -391,7 +386,6 @@
 							titulo: '<%= libro.getTitulo().replace("'", "\\'") %>',
 							paginas: <%= libro.getCantidadPaginas() %>,
 							fechaIngreso: '<%= libro.getFechaIngreso() %>',
-							prestamosPendientes: <%= libro.getCantidadPrestamosPendientes() %>
 						}
 					<% } else if (material instanceof DtArticulo) { %>
 						<% DtArticulo articulo = (DtArticulo) material; %>
@@ -402,7 +396,6 @@
 							peso: <%= articulo.getPeso() %>,
 							dimensiones: '<%= articulo.getDimensiones().replace("'", "\\'") %>',
 							fechaIngreso: '<%= articulo.getFechaIngreso() %>',
-							prestamosPendientes: <%= articulo.getCantidadPrestamosPendientes() %>
 						}
 					<% } %>
 					<% if (i < materiales.size() - 1) { %>,<% } %>
@@ -426,6 +419,19 @@
 		$('#edit-id').val(btn.data('id'));
 		$('#edit-tipo').val(tipo);
 		
+		// Llenar fecha de ingreso
+		var fecha = btn.data('fecha') || '';
+		console.log('Fecha original del botón:', fecha);
+		if (fecha && fecha !== 'N/A') {
+			// Convertir fecha del formato mostrado (dd/MM/yyyy) al formato del input date (yyyy-MM-dd)
+			var fechaConvertida = convertirFechaParaInput(fecha);
+			console.log('Fecha convertida:', fechaConvertida);
+			$('#edit-fecha').val(fechaConvertida);
+		} else {
+			console.log('Fecha vacía o N/A, limpiando campo');
+			$('#edit-fecha').val('');
+		}
+		
 		if (tipo === 'LIBRO') {
 			$('#libro-fields').show();
 			$('#edit-titulo').val(btn.data('titulo') || '');
@@ -447,6 +453,14 @@
 		var url = '<%= request.getContextPath() %>/editarMaterial';
 		var formData = new URLSearchParams(new FormData(form));
 		
+		// Log para debugging
+		console.log('=== ENVIANDO FORMULARIO DE EDICION ===');
+		console.log('Valor del campo fecha antes del envío:', $('#edit-fecha').val());
+		console.log('FormData entries:');
+		for (var pair of formData.entries()) {
+			console.log(pair[0] + ': ' + pair[1]);
+		}
+		
 		fetch(url, {
 			method: 'POST',
 			headers: { 'Accept': 'application/json' },
@@ -457,17 +471,17 @@
 			if (data && data.success) {
 				$('#editModal').modal('hide');
 				
-				// Actualizar la fila en la tabla sin recargar la página
-				actualizarFilaEnTabla(form);
-				
 				// Mostrar mensaje de éxito
 				mostrarMensajeExito(data.message || 'Material actualizado correctamente');
+				
+				// Recargar solo la tabla usando AJAX
+				recargarTablaMateriales();
 			} else {
 				var errorMsg = (data && data.message) ? data.message : 'Error al actualizar el material';
 				if (errorMsg.includes('conexión') || errorMsg.includes('base de datos')) {
 					mostrarErrorConexion(errorMsg);
 				} else {
-					alert(errorMsg);
+					mostrarErrorNegocio(errorMsg);
 				}
 			}
 		}).catch(function(err) {
@@ -525,16 +539,14 @@
 				// Mostrar mensaje de éxito
 				mostrarMensajeExito(data.message || 'Material agregado correctamente');
 				
-				// Recargar la página para mostrar el nuevo material
-				setTimeout(function() {
-					location.reload();
-				}, 1500);
+				// Recargar solo la tabla usando AJAX
+				recargarTablaMateriales();
 			} else {
 				var errorMsg = (data && data.message) ? data.message : 'Error al agregar el material';
 				if (errorMsg.includes('conexión') || errorMsg.includes('base de datos')) {
 					mostrarErrorConexion(errorMsg);
 				} else {
-					alert(errorMsg);
+					mostrarErrorNegocio(errorMsg);
 				}
 			}
 		}).catch(function(err) {
@@ -582,7 +594,7 @@
 	// Función para mostrar mensaje de éxito
 	function mostrarMensajeExito(mensaje) {
 		// Crear elemento de mensaje temporal
-		var alertDiv = $('<div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">' +
+		var alertDiv = $('<div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: 90%; min-width: 300px;">' +
 			'<strong>Éxito!</strong> ' + mensaje +
 			'<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
 			'<span aria-hidden="true">&times;</span>' +
@@ -604,13 +616,13 @@
 		
 		// Validar que al menos una fecha esté seleccionada
 		if (!fechaDesde && !fechaHasta) {
-			alert('Por favor seleccione al menos una fecha para filtrar.');
+			mostrarErrorNegocio('Por favor seleccione al menos una fecha para filtrar.');
 			return;
 		}
 		
 		// Validar que fechaDesde no sea mayor que fechaHasta
 		if (fechaDesde && fechaHasta && fechaDesde > fechaHasta) {
-			alert('La fecha "Desde" no puede ser mayor que la fecha "Hasta".');
+			mostrarErrorNegocio('La fecha "Desde" no puede ser mayor que la fecha "Hasta".');
 			return;
 		}
 		
@@ -697,16 +709,14 @@
 			row.append('<td>' + escapeHtml(material.titulo) + '</td>');
 			row.append('<td>' + material.paginas + ' páginas</td>');
 			row.append('<td>' + formatearFecha(material.fechaIngreso) + '</td>');
-			row.append('<td><span class="badge badge-warning">' + material.prestamosPendientes + '</span></td>');
-			row.append('<td><a href="#" class="btn btn-sm btn-primary edit-btn" data-id="' + material.id + '" data-tipo="LIBRO" data-titulo="' + escapeHtml(material.titulo) + '" data-paginas="' + material.paginas + '">Editar</a></td>');
+			row.append('<td><a href="#" class="btn btn-sm btn-primary edit-btn" data-id="' + material.id + '" data-tipo="LIBRO" data-titulo="' + escapeHtml(material.titulo) + '" data-paginas="' + material.paginas + '" data-fecha="' + formatearFecha(material.fechaIngreso) + '">Editar</a></td>');
 		} else if (material.tipo === 'ARTICULO') {
 			row.append('<td>' + material.id + '</td>');
 			row.append('<td><span class="badge badge-info">Artículo</span></td>');
 			row.append('<td>' + escapeHtml(material.descripcion) + '</td>');
 			row.append('<td>' + material.peso + ' kg, ' + escapeHtml(material.dimensiones) + '</td>');
 			row.append('<td>' + formatearFecha(material.fechaIngreso) + '</td>');
-			row.append('<td><span class="badge badge-warning">' + material.prestamosPendientes + '</span></td>');
-			row.append('<td><a href="#" class="btn btn-sm btn-primary edit-btn" data-id="' + material.id + '" data-tipo="ARTICULO" data-descripcion="' + escapeHtml(material.descripcion) + '" data-peso="' + material.peso + '" data-dimensiones="' + escapeHtml(material.dimensiones) + '">Editar</a></td>');
+			row.append('<td><a href="#" class="btn btn-sm btn-primary edit-btn" data-id="' + material.id + '" data-tipo="ARTICULO" data-descripcion="' + escapeHtml(material.descripcion) + '" data-peso="' + material.peso + '" data-dimensiones="' + escapeHtml(material.dimensiones) + '" data-fecha="' + formatearFecha(material.fechaIngreso) + '">Editar</a></td>');
 		}
 		
 		return row;
@@ -726,16 +736,72 @@
 	function formatearFecha(fechaStr) {
 		if (!fechaStr) return 'N/A';
 		try {
+			// Si viene en formato ISO (2025-09-11T00:00:00-03:00), extraer solo la parte de fecha
+			if (fechaStr.includes('T')) {
+				var fechaParte = fechaStr.split('T')[0]; // Obtener solo 2025-09-11
+				var partes = fechaParte.split('-');
+				if (partes.length === 3) {
+					// Convertir de YYYY-MM-DD a DD/MM/YYYY
+					return partes[2] + '/' + partes[1] + '/' + partes[0];
+				}
+			}
+			
+			// Si ya está en formato dd/MM/yyyy, devolverlo tal como está
+			if (fechaStr.includes('/')) {
+				return fechaStr;
+			}
+			
+			// Intentar crear Date como fallback
 			var fecha = new Date(fechaStr);
 			return fecha.toLocaleDateString('es-ES');
 		} catch (e) {
+			console.error('Error formateando fecha:', fechaStr, e);
 			return fechaStr;
 		}
 	}
 
+	// Función para convertir fecha del formato mostrado (dd/MM/yyyy) al formato del input date (yyyy-MM-dd)
+	function convertirFechaParaInput(fechaStr) {
+		if (!fechaStr || fechaStr === 'N/A') return '';
+		try {
+			// Si la fecha viene en formato dd/MM/yyyy, convertirla
+			if (fechaStr.includes('/')) {
+				var partes = fechaStr.split('/');
+				if (partes.length === 3) {
+					var dia = partes[0];
+					var mes = partes[1];
+					var anio = partes[2];
+					// Formato yyyy-MM-dd
+					return anio + '-' + mes.padStart(2, '0') + '-' + dia.padStart(2, '0');
+				}
+			}
+			// Si ya está en formato yyyy-MM-dd, devolverla tal como está
+			return fechaStr;
+		} catch (e) {
+			console.error('Error convirtiendo fecha:', e);
+			return '';
+		}
+	}
+
+
+	// Función para mostrar errores de negocio con Bootstrap
+	function mostrarErrorNegocio(mensaje) {
+		var errorDiv = $('<div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: 90%; min-width: 300px;">' +
+			'<strong>Error!</strong><br>' + mensaje + '<br><br>' +
+			'<button type="button" class="btn btn-sm btn-danger" onclick="$(this).closest(\'.alert\').alert(\'close\')">Entendido</button>' +
+			'</div>');
+		
+		$('body').append(errorDiv);
+		
+		// Auto-ocultar después de 8 segundos
+		setTimeout(function() {
+			errorDiv.alert('close');
+		}, 8000);
+	}
+
 	// Función para mostrar error de conexión con opción de reintentar
 	function mostrarErrorConexion(mensaje) {
-		var errorDiv = $('<div class="alert alert-warning alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px;">' +
+		var errorDiv = $('<div class="alert alert-warning alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: 90%; min-width: 300px;">' +
 			'<strong>Error de Conexión!</strong><br>' + mensaje + '<br><br>' +
 			'<button type="button" class="btn btn-sm btn-warning mr-2" onclick="reintentarOperacion()">Reintentar</button>' +
 			'<button type="button" class="btn btn-sm btn-secondary" onclick="$(this).closest(\'.alert\').alert(\'close\')">Cerrar</button>' +
@@ -761,6 +827,88 @@
 		setTimeout(function() {
 			location.reload();
 		}, 2000);
+	}
+
+	// Función para recargar solo la tabla de materiales usando AJAX
+	function recargarTablaMateriales() {
+		console.log('Recargando tabla de materiales...');
+		
+		// Mostrar indicador de carga
+		$('table tbody').html('<tr><td colspan="6" class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando materiales...</td></tr>');
+		
+		// Hacer petición AJAX para obtener los materiales en formato JSON
+		fetch('<%= request.getContextPath() %>/materialesData', {
+			method: 'GET',
+			headers: { 'Accept': 'application/json' }
+		}).then(function(response) {
+			return response.json();
+		}).then(function(materiales) {
+			console.log('Datos recibidos:', materiales);
+			
+			// Construir la tabla dinámicamente
+			var tbody = $('table tbody');
+			console.log('Selector tbody encontrado:', tbody.length, 'elementos');
+			console.log('Contenido actual del tbody:', tbody.html());
+			
+			tbody.empty();
+			
+			if (materiales && materiales.length > 0) {
+				console.log('Procesando', materiales.length, 'materiales');
+				var htmlContent = '';
+				materiales.forEach(function(material) {
+					console.log('Creando fila para material:', material);
+					var row = crearFilaMaterialSimple(material);
+					htmlContent += row[0].outerHTML;
+				});
+				console.log('HTML completo a insertar:', htmlContent);
+				
+				if (tbody.length > 0) {
+					tbody.html(htmlContent);
+					console.log('Contenido del tbody después de insertar:', tbody.html());
+				} else {
+					console.error('No se puede insertar HTML: elemento tbody no encontrado');
+				}
+			} else {
+				console.log('No hay materiales disponibles');
+				tbody.html('<tr><td colspan="6" class="text-center">No hay materiales disponibles</td></tr>');
+			}
+			
+			console.log('Tabla de materiales recargada exitosamente');
+		}).catch(function(error) {
+			console.error('Error al recargar tabla:', error);
+			$('table tbody').html('<tr><td colspan="6" class="text-center text-danger">Error al cargar materiales</td></tr>');
+		});
+	}
+
+	// Función simplificada para crear fila de material para AJAX
+	function crearFilaMaterialSimple(material) {
+		console.log('Creando fila para material:', material);
+		var row = $('<tr></tr>');
+		
+		if (material.tipo === 'LIBRO') {
+			var fechaFormateada = formatearFecha(material.fechaIngreso);
+			console.log('Fecha original:', material.fechaIngreso, 'Fecha formateada:', fechaFormateada);
+			
+			row.append('<td>' + material.id + '</td>');
+			row.append('<td><span class="badge badge-primary">Libro</span></td>');
+			row.append('<td>' + escapeHtml(material.titulo) + '</td>');
+			row.append('<td>' + material.paginas + ' páginas</td>');
+			row.append('<td>' + fechaFormateada + '</td>');
+			row.append('<td><a href="#" class="btn btn-sm btn-primary edit-btn" data-id="' + material.id + '" data-tipo="LIBRO" data-titulo="' + escapeHtml(material.titulo) + '" data-paginas="' + material.paginas + '" data-fecha="' + fechaFormateada + '">Editar</a></td>');
+		} else if (material.tipo === 'ARTICULO') {
+			var fechaFormateada = formatearFecha(material.fechaIngreso);
+			console.log('Fecha original:', material.fechaIngreso, 'Fecha formateada:', fechaFormateada);
+			
+			row.append('<td>' + material.id + '</td>');
+			row.append('<td><span class="badge badge-info">Artículo</span></td>');
+			row.append('<td>' + escapeHtml(material.descripcion) + '</td>');
+			row.append('<td>' + material.peso + ' kg</td>');
+			row.append('<td>' + fechaFormateada + '</td>');
+			row.append('<td><a href="#" class="btn btn-sm btn-primary edit-btn" data-id="' + material.id + '" data-tipo="ARTICULO" data-descripcion="' + escapeHtml(material.descripcion) + '" data-peso="' + material.peso + '" data-dimensiones="' + escapeHtml(material.dimensiones) + '" data-fecha="' + fechaFormateada + '">Editar</a></td>');
+		}
+		
+		console.log('Fila creada:', row[0].outerHTML);
+		return row;
 	}
 	</script>
 </body>

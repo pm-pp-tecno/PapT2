@@ -123,5 +123,10 @@ public class ControladorLector implements IControladorLector {
 		}
 	}
 
+	@Override
+	public boolean lectorEstaSuspendido(String emailLector) {
+		ManejadorLector manejadorLector = ManejadorLector.getInstancia();
+		return manejadorLector.lectorEstaSuspendido(emailLector);
+	}
 
 }

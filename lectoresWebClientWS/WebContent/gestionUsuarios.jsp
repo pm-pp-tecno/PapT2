@@ -269,16 +269,80 @@
 										btn.data('zona', $('#edit-zona').val());
 									}
 				$('#editModal').modal('hide');
-				// opcional: mostrar mensaje rápido
-				alert(data.message || 'Guardado');
+				// Mostrar mensaje de éxito con Bootstrap
+				mostrarMensajeExito(data.message || 'Usuario actualizado correctamente');
 			} else {
-				alert((data && data.message) ? data.message : 'Error al guardar');
+				var errorMsg = (data && data.message) ? data.message : 'Error al guardar';
+				if (errorMsg.includes('conexión') || errorMsg.includes('base de datos')) {
+					mostrarErrorConexion(errorMsg);
+				} else {
+					mostrarErrorNegocio(errorMsg);
+				}
 			}
 		}).catch(function(err) {
 			console.error(err);
-			alert('Error de comunicación con el servidor');
+			mostrarErrorConexion('Error de comunicación con el servidor');
 		});
 	});
+
+	// Función para mostrar mensaje de éxito con Bootstrap
+	function mostrarMensajeExito(mensaje) {
+		var alertDiv = $('<div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: 90%; min-width: 300px;">' +
+			'<strong>Éxito!</strong> ' + mensaje +
+			'<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+			'<span aria-hidden="true">&times;</span></button></div>');
+		
+		$('body').append(alertDiv);
+		
+		setTimeout(function() {
+			alertDiv.alert('close');
+		}, 3000);
+	}
+
+	// Función para mostrar errores de negocio con Bootstrap
+	function mostrarErrorNegocio(mensaje) {
+		var errorDiv = $('<div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: 90%; min-width: 300px;">' +
+			'<strong>Error!</strong><br>' + mensaje + '<br><br>' +
+			'<button type="button" class="btn btn-sm btn-danger" onclick="$(this).closest(\'.alert\').alert(\'close\')">Entendido</button>' +
+			'</div>');
+		
+		$('body').append(errorDiv);
+		
+		// Auto-ocultar después de 8 segundos
+		setTimeout(function() {
+			errorDiv.alert('close');
+		}, 8000);
+	}
+
+	// Función para mostrar errores de conexión con Bootstrap
+	function mostrarErrorConexion(mensaje) {
+		var errorDiv = $('<div class="alert alert-warning alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: 90%; min-width: 300px;">' +
+			'<strong>Error de Conexión!</strong><br>' + mensaje + '<br><br>' +
+			'<button type="button" class="btn btn-sm btn-warning mr-2" onclick="reintentarOperacion()">Reintentar</button>' +
+			'<button type="button" class="btn btn-sm btn-secondary" onclick="$(this).closest(\'.alert\').alert(\'close\')">Cerrar</button>' +
+			'</div>');
+		
+		$('body').append(errorDiv);
+		
+		// Auto-ocultar después de 10 segundos
+		setTimeout(function() {
+			errorDiv.alert('close');
+		}, 10000);
+	}
+
+	// Función para reintentar la operación
+	function reintentarOperacion() {
+		// Cerrar el modal de error
+		$('.alert-warning').alert('close');
+		
+		// Mostrar mensaje de reintento
+		mostrarMensajeExito('Reintentando operación...');
+		
+		// Esperar un momento y recargar la página
+		setTimeout(function() {
+			location.reload();
+		}, 2000);
+	}
 	</script>
 </body>
 </html>

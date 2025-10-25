@@ -93,6 +93,15 @@
         <url-pattern>/editarPrestamo</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>MaterialesDataServlet</servlet-name>
+        <servlet-class>servlets.MaterialesDataServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MaterialesDataServlet</servlet-name>
+        <url-pattern>/materialesData</url-pattern>
+    </servlet-mapping>
+
 
     <!-- Session Configuration -->
     <session-config>

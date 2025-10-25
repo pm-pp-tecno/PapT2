@@ -143,6 +143,58 @@ public class ControladorMaterial implements IControladorMaterial {
 	}
 
 	@Override
+	public void actualizarLibroConFecha(Long id, String titulo, Integer cantidadPaginas, Date fechaIngreso) {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		em.getTransaction().begin();
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			mM.actualizarLibroConFecha(id, titulo, cantidadPaginas, fechaIngreso);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw e;
+		} finally {
+			em.close();
+		}
+	}
+
+	@Override
+	public void actualizarArticuloConFecha(Long id, String descripcion, Double peso, String dimensiones, Date fechaIngreso) {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		em.getTransaction().begin();
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			mM.actualizarArticuloConFecha(id, descripcion, peso, dimensiones, fechaIngreso);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw e;
+		} finally {
+			em.close();
+		}
+	}
+
+	@Override
+	public void actualizarFechaMaterial(Long id, Date fechaIngreso) {
+		emf = Persistence.createEntityManagerFactory("Conexion");
+		em = emf.createEntityManager();
+		em.getTransaction().begin();
+		try {
+			ManejadorMaterial mM = ManejadorMaterial.getInstancia();
+			mM.actualizarFechaMaterial(id, fechaIngreso);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw e;
+		} finally {
+			em.close();
+		}
+	}
+
+
+	@Override
 	public void agregarLibro(String titulo, Integer cantidadPaginas, Date fechaIngreso) {
 		emf = Persistence.createEntityManagerFactory("Conexion");
 		em = emf.createEntityManager();

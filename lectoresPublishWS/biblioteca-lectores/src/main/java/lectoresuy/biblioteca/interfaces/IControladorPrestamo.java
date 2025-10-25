@@ -26,5 +26,7 @@ public interface IControladorPrestamo {
     List<DtPrestamo> listarPrestamosZona(String zona);
 
     List<lectoresuy.biblioteca.datatypes.DtMaterial> listarMaterialesConteoPrestamosPendientes();
+
+    boolean materialEstaDisponible(Long idMaterial);
  
 }

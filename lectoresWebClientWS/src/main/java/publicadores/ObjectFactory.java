@@ -30,14 +30,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DtArticulo }
-     * 
-     */
-    public DtArticulo createDtArticulo() {
-        return new DtArticulo();
-    }
-
-    /**
      * Create an instance of {@link DtLibro }
      * 
      */
@@ -70,11 +62,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DtArticuloArray }
+     * Create an instance of {@link DtArticulo }
      * 
      */
-    public DtArticuloArray createDtArticuloArray() {
-        return new DtArticuloArray();
+    public DtArticulo createDtArticulo() {
+        return new DtArticulo();
     }
 
     /**
@@ -107,6 +99,14 @@ public class ObjectFactory {
      */
     public DtPrestamoArray createDtPrestamoArray() {
         return new DtPrestamoArray();
+    }
+
+    /**
+     * Create an instance of {@link DtArticuloArray }
+     * 
+     */
+    public DtArticuloArray createDtArticuloArray() {
+        return new DtArticuloArray();
     }
 
     /**

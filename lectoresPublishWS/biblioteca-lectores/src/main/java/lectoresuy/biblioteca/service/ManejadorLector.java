@@ -44,5 +44,12 @@ public class ManejadorLector {
 		return lectorDAO.buscarPorEmail(email);
 	}
     
+    public boolean lectorEstaSuspendido(String emailLector) {
+        Lector lector = lectorDAO.buscarPorEmail(emailLector);
+        if (lector != null) {
+            return lector.getEstado() == EstadoLector.SUSPENDIDO;
+        }
+        return false; // Si no se encuentra el lector, asumir que no está suspendido
+    }
     
 }

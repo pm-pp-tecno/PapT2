@@ -148,6 +148,64 @@ public class ControladorPublish {
 	}
 
 	@WebMethod
+	public void actualizarLibroConFecha(long id, String titulo, int cantidadPaginas, String fechaIngreso) {
+		try {
+			// Convertir String a Date usando Calendar para evitar problemas de zona horaria
+			java.util.Calendar cal = java.util.Calendar.getInstance();
+			String[] partes = fechaIngreso.split("-");
+			int anio = Integer.parseInt(partes[0]);
+			int mes = Integer.parseInt(partes[1]) - 1; // Calendar usa 0-based months
+			int dia = Integer.parseInt(partes[2]);
+			cal.set(anio, mes, dia, 0, 0, 0);
+			cal.set(java.util.Calendar.MILLISECOND, 0);
+			Date fecha = cal.getTime();
+			
+			iconM.actualizarLibroConFecha(id, titulo, cantidadPaginas, fecha);
+		} catch (Exception ex) {
+			throw new WebServiceException("Error al actualizar libro: " + ex.getMessage(), ex);
+		}
+	}
+
+	@WebMethod
+	public void actualizarArticuloConFecha(long id, String descripcion, double peso, String dimensiones, String fechaIngreso) {
+		try {
+			// Convertir String a Date usando Calendar para evitar problemas de zona horaria
+			java.util.Calendar cal = java.util.Calendar.getInstance();
+			String[] partes = fechaIngreso.split("-");
+			int anio = Integer.parseInt(partes[0]);
+			int mes = Integer.parseInt(partes[1]) - 1; // Calendar usa 0-based months
+			int dia = Integer.parseInt(partes[2]);
+			cal.set(anio, mes, dia, 0, 0, 0);
+			cal.set(java.util.Calendar.MILLISECOND, 0);
+			Date fecha = cal.getTime();
+			
+			iconM.actualizarArticuloConFecha(id, descripcion, peso, dimensiones, fecha);
+		} catch (Exception ex) {
+			throw new WebServiceException("Error al actualizar artículo: " + ex.getMessage(), ex);
+		}
+	}
+
+	@WebMethod
+	public void actualizarFechaMaterial(long id, String fechaIngreso) {
+		try {
+			// Convertir String a Date usando Calendar para evitar problemas de zona horaria
+			java.util.Calendar cal = java.util.Calendar.getInstance();
+			String[] partes = fechaIngreso.split("-");
+			int anio = Integer.parseInt(partes[0]);
+			int mes = Integer.parseInt(partes[1]) - 1; // Calendar usa 0-based months
+			int dia = Integer.parseInt(partes[2]);
+			cal.set(anio, mes, dia, 0, 0, 0);
+			cal.set(java.util.Calendar.MILLISECOND, 0);
+			Date fecha = cal.getTime();
+			
+			iconM.actualizarFechaMaterial(id, fecha);
+		} catch (Exception ex) {
+			throw new WebServiceException("Error al actualizar fecha del material: " + ex.getMessage(), ex);
+		}
+	}
+
+
+	@WebMethod
 	public void agregarLibro(String titulo, int cantidadPaginas, String fechaIngreso) {
 		try {
 			// Convertir String a Date usando Calendar para evitar problemas de zona horaria
@@ -237,18 +295,32 @@ public class ControladorPublish {
 	@WebMethod
 	public void registrarPrestamo(long idMaterial, String emailLector, String numeroBibliotecario, String fechaDevolucion) {
 		try {
-		// Convertir String a Date usando Calendar para evitar problemas de zona horaria
-		java.util.Calendar cal = java.util.Calendar.getInstance();
-		String[] partes = fechaDevolucion.split("-");
-		int anio = Integer.parseInt(partes[0]);
-		int mes = Integer.parseInt(partes[1]) - 1; // Calendar usa 0-based months
-		int dia = Integer.parseInt(partes[2]);
-		cal.set(anio, mes, dia, 0, 0, 0);
-		cal.set(java.util.Calendar.MILLISECOND, 0);
-		Date fecha = cal.getTime();
+			System.out.println("=== CONTROLADOR PUBLISH - REGISTRAR PRESTAMO ===");
+			System.out.println("ID Material recibido: " + idMaterial);
+			System.out.println("Email Lector recibido: " + emailLector);
+			System.out.println("Numero Bibliotecario recibido: " + numeroBibliotecario);
+			System.out.println("Fecha Devolucion recibida: " + fechaDevolucion);
+			
+			// Convertir String a Date usando Calendar para evitar problemas de zona horaria
+			java.util.Calendar cal = java.util.Calendar.getInstance();
+			String[] partes = fechaDevolucion.split("-");
+			int anio = Integer.parseInt(partes[0]);
+			int mes = Integer.parseInt(partes[1]) - 1; // Calendar usa 0-based months
+			int dia = Integer.parseInt(partes[2]);
+			cal.set(anio, mes, dia, 0, 0, 0);
+			cal.set(java.util.Calendar.MILLISECOND, 0);
+			Date fecha = cal.getTime();
+			
+			System.out.println("Fecha parseada exitosamente: " + fecha);
+			System.out.println("Llamando a iconP.agregarPrestamo...");
 			
 			iconP.agregarPrestamo((Long) idMaterial, emailLector, numeroBibliotecario, fecha);
+			
+			System.out.println("Préstamo agregado exitosamente en el controlador.");
 		} catch (Exception ex) {
+			System.out.println("ERROR en ControladorPublish.registrarPrestamo: " + ex.getMessage());
+			System.out.println("Tipo de excepción: " + ex.getClass().getSimpleName());
+			ex.printStackTrace();
 			throw new WebServiceException("Error al registrar préstamo: " + ex.getMessage(), ex);
 		}
 	}
@@ -294,18 +366,32 @@ public class ControladorPublish {
 	@WebMethod
 	public DtLibro[] listarLibrosParaSelect() {
 		List<DtLibro> lista = iconM.listarLibros();
+		// No verificar disponibilidad - todos los materiales se pueden seleccionar
+		// Los nuevos préstamos siempre empiezan como PENDIENTE
 		return lista.toArray(new DtLibro[0]);
 	}
 
 	@WebMethod
 	public DtArticulo[] listarArticulosParaSelect() {
 		List<DtArticulo> lista = iconM.listarArticulos();
+		// No verificar disponibilidad - todos los materiales se pueden seleccionar
+		// Los nuevos préstamos siempre empiezan como PENDIENTE
 		return lista.toArray(new DtArticulo[0]);
 	}
 
 	@WebMethod
 	public DtLector[] listarLectoresParaSelect() {
 		List<DtLector> lista = iconL.listarLectores();
+		// Agregar información de estado solo si está suspendido
+		for (DtLector lector : lista) {
+			boolean suspendido = iconL.lectorEstaSuspendido(lector.getEmail());
+			if (suspendido) {
+				// Solo agregar el estado si está suspendido
+				String nombreOriginal = lector.getNombre();
+				lector.setNombre(nombreOriginal + " (SUSPENDIDO)");
+			}
+			// Si está habilitado, mantener el nombre original sin modificaciones
+		}
 		return lista.toArray(new DtLector[0]);
 	}
 
@@ -313,6 +399,16 @@ public class ControladorPublish {
 	public DtBibliotecario[] listarBibliotecariosParaSelect() {
 		List<DtBibliotecario> lista = iconB.listarBibliotecarios();
 		return lista.toArray(new DtBibliotecario[0]);
+	}
+
+	@WebMethod
+	public boolean materialEstaDisponible(long idMaterial) {
+		return iconP.materialEstaDisponible(idMaterial);
+	}
+
+	@WebMethod
+	public boolean lectorEstaSuspendido(String emailLector) {
+		return iconL.lectorEstaSuspendido(emailLector);
 	}
 
 }

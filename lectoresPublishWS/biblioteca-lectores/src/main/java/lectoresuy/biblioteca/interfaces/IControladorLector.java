@@ -24,4 +24,6 @@ public interface IControladorLector {
 	
 	public void cambiarZonaLector(String email, String nuevaZona);
 	
+	public boolean lectorEstaSuspendido(String emailLector);
+	
 }

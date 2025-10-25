@@ -53,10 +53,10 @@ public class GestionPrestamosServlet extends HttpServlet {
                 }
             }
             
-            // Obtener datos para los selects
-            DtLibroArray librosArray = controlador.listarLibros();
-            DtArticuloArray articulosArray = controlador.listarArticulos();
-            DtLectorArray lectoresArray = controlador.listarLectores();
+            // Obtener datos para los selects (con información de disponibilidad y estado)
+            DtLibroArray librosArray = controlador.listarLibrosParaSelect();
+            DtArticuloArray articulosArray = controlador.listarArticulosParaSelect();
+            DtLectorArray lectoresArray = controlador.listarLectoresParaSelect();
             DtBibliotecarioArray bibliotecariosArray = controlador.listarBibliotecarios();
             
             // Convertir a arrays

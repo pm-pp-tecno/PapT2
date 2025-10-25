@@ -89,18 +89,45 @@ public class PrestamoDAO {
                 Arrays.asList(Prestamo.EstadoPrestamo.PENDIENTE, Prestamo.EstadoPrestamo.EN_CURSO));
             
             // Si no encuentra ningún préstamo activo, el material está disponible
-            Prestamo prestamoActivo = query.uniqueResult();
-            return prestamoActivo == null;
+            List<Prestamo> prestamosActivos = query.list();
+            return prestamosActivos.isEmpty();
         }
     }
 
     public List<Object[]> contarPrestamosPendientesPorMaterial() {
+        System.out.println("=== PrestamoDAO.contarPrestamosPendientesPorMaterial ===");
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<Object[]> query = session.createQuery(
                 "SELECT p.material.id, COUNT(p) FROM Prestamo p WHERE p.estado = :estado GROUP BY p.material.id ORDER BY COUNT(p) DESC", 
                 Object[].class);
             query.setParameter("estado", Prestamo.EstadoPrestamo.PENDIENTE);
-            return query.list();
+            List<Object[]> resultados = query.list();
+            System.out.println("Resultados de la consulta: " + resultados.size());
+            for (Object[] resultado : resultados) {
+                System.out.println("Material ID: " + resultado[0] + ", Cantidad: " + resultado[1]);
+            }
+            return resultados;
+        }
+    }
+
+    public boolean materialTienePrestamoEnCurso(Long materialId, Long prestamoIdExcluir) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<Prestamo> query = session.createQuery(
+                "FROM Prestamo p WHERE p.material.id = :materialId AND p.estado = :estado AND p.id != :prestamoIdExcluir", 
+                Prestamo.class);
+            query.setParameter("materialId", materialId);
+            query.setParameter("estado", Prestamo.EstadoPrestamo.EN_CURSO);
+            query.setParameter("prestamoIdExcluir", prestamoIdExcluir);
+            
+            List<Prestamo> prestamosEnCurso = query.list();
+            boolean tienePrestamoEnCurso = !prestamosEnCurso.isEmpty();
+            
+            System.out.println("Material " + materialId + " tiene préstamo 'En Curso' (excluyendo " + prestamoIdExcluir + "): " + tienePrestamoEnCurso);
+            if (tienePrestamoEnCurso) {
+                System.out.println("Préstamos 'En Curso' encontrados: " + prestamosEnCurso.size());
+            }
+            
+            return tienePrestamoEnCurso;
         }
     }
 }

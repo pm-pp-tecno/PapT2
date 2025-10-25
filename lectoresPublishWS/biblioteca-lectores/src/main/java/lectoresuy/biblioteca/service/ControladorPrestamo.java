@@ -40,33 +40,45 @@ public class ControladorPrestamo implements IControladorPrestamo {
 
     @Override
     public void agregarPrestamo(Long idMaterial, String emailLector, String numeroBibliotecario, Date fechaDevolucion) throws Exception {
-        if (!materialEstaDisponible(idMaterial)) {
-            throw new MaterialNoDisponibleExcepcion("El material con ID " + idMaterial + " no está disponible para préstamo");
-        }
+        System.out.println("=== CONTROLADOR PRESTAMO - AGREGAR PRESTAMO ===");
+        System.out.println("ID Material: " + idMaterial);
+        System.out.println("Email Lector: " + emailLector);
+        System.out.println("Numero Bibliotecario: " + numeroBibliotecario);
+        System.out.println("Fecha Devolucion: " + fechaDevolucion);
+        
+        System.out.println("Saltando verificación de disponibilidad - nuevo préstamo será PENDIENTE");
 
+        System.out.println("Buscando lector...");
         Lector lector = manejadorLector.buscarLector(emailLector);
         if (lector == null) {
+            System.out.println("ERROR: Lector no encontrado");
             throw new LectorNoEncontradoExcepcion("No se encontró un lector con el email: " + emailLector);
         }
+        System.out.println("Lector encontrado: " + lector.getNombre());
 
+        System.out.println("Buscando bibliotecario...");
         Bibliotecario bibliotecario = manejadorBibliotecario.buscarBibliotecario(numeroBibliotecario);
         if (bibliotecario == null) {
+            System.out.println("ERROR: Bibliotecario no encontrado");
             throw new BibliotecarioNoEncontradoExcepcion("No se encontró un bibliotecario con el número: " + numeroBibliotecario);
         }
+        System.out.println("Bibliotecario encontrado: " + bibliotecario.getNombre());
 
+        System.out.println("Buscando material...");
         Material material = manejadorMaterial.buscarMaterial(idMaterial);
         if (material == null) {
+            System.out.println("ERROR: Material no encontrado");
             throw new Exception("No se encontró el material con ID: " + idMaterial);
         }
+        System.out.println("Material encontrado: " + material.getClass().getSimpleName());
 
+        System.out.println("Creando nuevo préstamo...");
         Date fechaSolicitud = new Date();
         Prestamo nuevoPrestamo = new Prestamo(lector, bibliotecario, material, fechaSolicitud, fechaDevolucion, EstadoPrestamo.PENDIENTE);
 
+        System.out.println("Guardando préstamo en la base de datos...");
         manejadorPrestamo.guardarPrestamo(nuevoPrestamo);
-    }
-
-    public boolean materialEstaDisponible(Long idMaterial) {
-        return manejadorPrestamo.verificarDisponibilidadMaterial(idMaterial);
+        System.out.println("Préstamo guardado exitosamente.");
     }
 
 	public void registrarPrestamo(Long idMaterial, String emailLector, String numeroBibliotecario, Date fechaDevolucion) {
@@ -160,6 +172,11 @@ public class ControladorPrestamo implements IControladorPrestamo {
     @Override
     public List<DtMaterial> listarMaterialesConteoPrestamosPendientes() {
         return manejadorPrestamo.listarMaterialesConteoPrestamosPendientes();
+    }
+
+    @Override
+    public boolean materialEstaDisponible(Long idMaterial) {
+        return manejadorPrestamo.verificarDisponibilidadMaterial(idMaterial);
     }
     
 }

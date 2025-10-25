@@ -94,12 +94,29 @@ public class ManejadorPrestamo {
     }
 
     public void actualizarPrestamo(Long prestamoId, EstadoPrestamo estado, Date fechaDevolucionEstimada) {
+        System.out.println("=== ManejadorPrestamo.actualizarPrestamo ===");
+        System.out.println("ID del préstamo: " + prestamoId);
+        System.out.println("Nuevo estado: " + estado);
+        
         Prestamo prestamo = prestamoDAO.encontrarPorId(prestamoId);
         if (prestamo != null) {
+            // Validar restricción de negocio: no puede haber dos préstamos "En Curso" del mismo material
+            if (estado == EstadoPrestamo.EN_CURSO) {
+                System.out.println("Validando restricción: material no puede estar 'En Curso' con múltiples lectores");
+                boolean materialYaEnCurso = prestamoDAO.materialTienePrestamoEnCurso(prestamo.getMaterial().getId(), prestamoId);
+                if (materialYaEnCurso) {
+                    System.out.println("ERROR: El material ya está 'En Curso' con otro lector");
+                    throw new RuntimeException("El material con ID " + prestamo.getMaterial().getId() + " ya está siendo prestado a otro lector. No se puede tener el mismo material 'En Curso' con múltiples lectores simultáneamente.");
+                }
+                System.out.println("Validación exitosa: material disponible para estado 'En Curso'");
+            }
+            
             prestamo.setEstado(estado);
             prestamo.setFechaDevolucionEstimada(fechaDevolucionEstimada);
             prestamoDAO.actualizar(prestamo);
+            System.out.println("Préstamo actualizado exitosamente");
         }
+        System.out.println("=== FIN ManejadorPrestamo.actualizarPrestamo ===");
     }
 
     public void actualizarInformacionPrestamo(DtPrestamo dtPrestamo) {

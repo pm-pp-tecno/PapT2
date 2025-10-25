@@ -1,6 +1,7 @@
 package servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,10 +20,10 @@ import publicadores.DtArticulo;
 import publicadores.DtLibroArray;
 import publicadores.DtArticuloArray;
 
-public class GestionMaterialesServlet extends HttpServlet {
+public class MaterialesDataServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public GestionMaterialesServlet() {
+    public MaterialesDataServlet() {
         super();
     }
 
@@ -32,9 +33,10 @@ public class GestionMaterialesServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
 
         try {
-            // Obtener datos del servicio web usando los nuevos métodos específicos
+            // Obtener datos del servicio web
             ControladorPublishService service = new ControladorPublishService();
             ControladorPublish controlador = service.getControladorPublishPort();
             
@@ -73,22 +75,58 @@ public class GestionMaterialesServlet extends HttpServlet {
             // Configurar formato de fecha
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             
-            // Pasar datos a la vista
-            request.setAttribute("materiales", materiales);
-            request.setAttribute("dateFormat", dateFormat);
+            // Construir respuesta JSON
+            StringBuilder json = new StringBuilder();
+            json.append('[');
             
-            // Redirigir a la vista
-            request.getRequestDispatcher("/gestionMateriales.jsp").forward(request, response);
+            boolean first = true;
+            for (Object material : materiales) {
+                if (!first) {
+                    json.append(',');
+                }
+                first = false;
+                
+                if (material instanceof DtLibro) {
+                    DtLibro libro = (DtLibro) material;
+                    json.append('{');
+                    json.append("\"id\":").append(libro.getId()).append(',');
+                    json.append("\"tipo\":\"LIBRO\"").append(',');
+                    json.append("\"titulo\":\"").append(escapeJson(libro.getTitulo())).append('"').append(',');
+                    json.append("\"paginas\":").append(libro.getCantidadPaginas()).append(',');
+                json.append("\"fechaIngreso\":\"").append(escapeJson(libro.getFechaIngreso().toString())).append('"');
+                    json.append('}');
+                } else if (material instanceof DtArticulo) {
+                    DtArticulo articulo = (DtArticulo) material;
+                    json.append('{');
+                    json.append("\"id\":").append(articulo.getId()).append(',');
+                    json.append("\"tipo\":\"ARTICULO\"").append(',');
+                    json.append("\"descripcion\":\"").append(escapeJson(articulo.getDescripcion())).append('"').append(',');
+                    json.append("\"peso\":").append(articulo.getPeso()).append(',');
+                    json.append("\"dimensiones\":\"").append(escapeJson(articulo.getDimensiones())).append('"').append(',');
+                json.append("\"fechaIngreso\":\"").append(escapeJson(articulo.getFechaIngreso().toString())).append('"');
+                    json.append('}');
+                }
+            }
+            
+            json.append(']');
+            
+            try (PrintWriter out = response.getWriter()) {
+                out.print(json.toString());
+            }
             
         } catch (Exception e) {
-            // En caso de error, mostrar mensaje y lista vacía
             System.err.println("Error al cargar materiales: " + e.getMessage());
             e.printStackTrace();
             
-            request.setAttribute("materiales", new ArrayList<Object>());
-            request.setAttribute("errorMessage", "Error al cargar materiales: " + e.getMessage());
-            request.setAttribute("dateFormat", new SimpleDateFormat("dd/MM/yyyy"));
-            request.getRequestDispatcher("/gestionMateriales.jsp").forward(request, response);
+            // Enviar array vacío en caso de error
+            try (PrintWriter out = response.getWriter()) {
+                out.print("[]");
+            }
         }
+    }
+
+    private String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\\","\\\\").replace("\"","\\\"").replace("\n","\\n").replace("\r","\\r").replace("\t","\\t");
     }
 }

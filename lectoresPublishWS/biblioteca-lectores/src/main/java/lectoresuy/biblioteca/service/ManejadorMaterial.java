@@ -105,6 +105,44 @@ public class ManejadorMaterial {
         }
     }
 
+    public void actualizarLibroConFecha(Long id, String titulo, Integer cantidadPaginas, Date fechaIngreso) {
+        Material material = materialDAO.encontrarPorId(id);
+        if (material instanceof Libro) {
+            Libro libro = (Libro) material;
+            libro.setTitulo(titulo);
+            libro.setCantidadPaginas(cantidadPaginas.toString());
+            libro.setFechaIngreso(fechaIngreso);
+            materialDAO.actualizar(libro);
+        } else {
+            throw new RuntimeException("El material con ID " + id + " no es un libro");
+        }
+    }
+
+    public void actualizarArticuloConFecha(Long id, String descripcion, Double peso, String dimensiones, Date fechaIngreso) {
+        Material material = materialDAO.encontrarPorId(id);
+        if (material instanceof Articulo) {
+            Articulo articulo = (Articulo) material;
+            articulo.setDescripcion(descripcion);
+            articulo.setPeso(peso.floatValue());
+            articulo.setDimensiones(dimensiones);
+            articulo.setFechaIngreso(fechaIngreso);
+            materialDAO.actualizar(articulo);
+        } else {
+            throw new RuntimeException("El material con ID " + id + " no es un artículo");
+        }
+    }
+
+    public void actualizarFechaMaterial(Long id, Date fechaIngreso) {
+        Material material = materialDAO.encontrarPorId(id);
+        if (material != null) {
+            material.setFechaIngreso(fechaIngreso);
+            materialDAO.actualizar(material);
+        } else {
+            throw new RuntimeException("El material con ID " + id + " no existe");
+        }
+    }
+
+
     public void agregarLibro(String titulo, Integer cantidadPaginas, Date fechaIngreso) {
         Libro nuevoLibro = new Libro(fechaIngreso, titulo, cantidadPaginas.toString());
         materialDAO.guardar(nuevoLibro);

@@ -37,8 +37,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "id"
 })
 @XmlSeeAlso({
-    DtArticulo.class,
-    DtLibro.class
+    DtLibro.class,
+    DtArticulo.class
 })
 public abstract class DtMaterial {
 
