@@ -42,16 +42,57 @@ public class GestionPrestamosServlet extends HttpServlet {
             ControladorPublishService service = new ControladorPublishService();
             ControladorPublish controlador = service.getControladorPublishPort();
             
+            // Obtener datos del usuario de la sesión
+            String tipoUsuario = (String) request.getSession().getAttribute("tipoUsuario");
+            String emailUsuario = (String) request.getSession().getAttribute("email");
+            
+            // Debug: Imprimir datos de sesión
+            System.out.println("=== GESTION PRESTAMOS SERVLET DEBUG ===");
+            System.out.println("Tipo de usuario: " + tipoUsuario);
+            System.out.println("Email del usuario: " + emailUsuario);
+            
             // Obtener préstamos
             DtPrestamoArray prestamosArray = controlador.listarPrestamos();
             
-            // Convertir a lista
+            // Debug: Imprimir total de préstamos
+            int totalPrestamos = prestamosArray != null && prestamosArray.getItem() != null ? prestamosArray.getItem().size() : 0;
+            System.out.println("Total de préstamos en el sistema: " + totalPrestamos);
+            
+            // Convertir a lista y filtrar según el tipo de usuario
             List<DtPrestamo> prestamos = new ArrayList<>();
             if (prestamosArray != null && prestamosArray.getItem() != null) {
                 for (DtPrestamo prestamo : prestamosArray.getItem()) {
-                    prestamos.add(prestamo);
+                    // Debug: Imprimir información de cada préstamo
+                    if (prestamo.getLector() != null) {
+                        System.out.println("Préstamo ID: " + prestamo.getId() + 
+                                          ", Lector Email: " + prestamo.getLector().getEmail() + 
+                                          ", Estado: " + prestamo.getEstado());
+                    } else {
+                        System.out.println("Préstamo ID: " + prestamo.getId() + 
+                                          ", Lector: NULL" + 
+                                          ", Estado: " + prestamo.getEstado());
+                    }
+                    
+                    // Si es BIBLIOTECARIO, mostrar todos los préstamos
+                    // Si es LECTOR, mostrar solo sus préstamos
+                    if ("BIBLIOTECARIO".equals(tipoUsuario)) {
+                        prestamos.add(prestamo);
+                        System.out.println("Agregado para BIBLIOTECARIO");
+                    } else if ("LECTOR".equals(tipoUsuario) && emailUsuario != null) {
+                        // Filtrar por el email del lector actual
+                        if (prestamo.getLector() != null && emailUsuario.equals(prestamo.getLector().getEmail())) {
+                            prestamos.add(prestamo);
+                            System.out.println("Agregado para LECTOR: " + emailUsuario);
+                        } else {
+                            System.out.println("NO agregado para LECTOR: " + emailUsuario + 
+                                             " != " + (prestamo.getLector() != null ? prestamo.getLector().getEmail() : "NULL"));
+                        }
+                    }
                 }
             }
+            
+            System.out.println("Préstamos filtrados finales: " + prestamos.size());
+            System.out.println("=== FIN DEBUG ===");
             
             // Obtener datos para los selects (con información de disponibilidad y estado)
             DtLibroArray librosArray = controlador.listarLibrosParaSelect();

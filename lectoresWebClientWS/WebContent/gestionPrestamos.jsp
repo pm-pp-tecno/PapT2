@@ -13,6 +13,10 @@
 	List<DtPrestamo> prestamos = (List<DtPrestamo>) request.getAttribute("prestamos");
 	String errorMessage = (String) request.getAttribute("errorMessage");
 	SimpleDateFormat dateFormat = (SimpleDateFormat) request.getAttribute("dateFormat");
+	
+	// Obtener datos del usuario de la sesión
+	String usuario = (String) session.getAttribute("usuario");
+	String tipoUsuario = (String) session.getAttribute("tipoUsuario");
     
 	// Si no hay datos, inicializar lista vacía
 	if (prestamos == null) {
@@ -59,13 +63,27 @@
 					<a class="nav-link" href="consultas">Consultas</a>
 				</li>
 		</ul>
+		<ul class="navbar-nav ml-auto">
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<%= usuario %> (<%= tipoUsuario %>)
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<a class="dropdown-item" href="logout">Cerrar Sesión</a>
+				</div>
+			</li>
+		</ul>
 	</div>
 	</nav>
 
 	<div class="container mt-4">
 		<div class="row">
 			<div class="col-12">
-				<h2 class="mb-4">Gestión de Préstamos</h2>
+				<% if ("LECTOR".equals(tipoUsuario)) { %>
+					<h2 class="mb-4">Mis Préstamos</h2>
+				<% } else { %>
+					<h2 class="mb-4">Gestión de Préstamos</h2>
+				<% } %>
 				
 				<% if (errorMessage != null) { %>
 					<div class="alert alert-danger" role="alert">
@@ -75,19 +93,314 @@
 				
 				<div class="card">
 					<div class="card-header d-flex justify-content-between align-items-center">
-						<h5 class="mb-0">Lista de Préstamos</h5>
-						<div>
-							<button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#agregarPrestamoModal">
-								<i class="fas fa-plus"></i> Nuevo Préstamo
-							</button>
-						</div>
+						<% if ("LECTOR".equals(tipoUsuario)) { %>
+							<h5 class="mb-0">Mis Préstamos</h5>
+						<% } else { %>
+							<h5 class="mb-0">Lista de Préstamos</h5>
+							<div>
+								<button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#agregarPrestamoModal">
+									<i class="fas fa-plus"></i> Nuevo Préstamo
+								</button>
+							</div>
+						<% } %>
 					</div>
 					<div class="card-body">
-						<% if (prestamos.isEmpty()) { %>
-							<div class="alert alert-info" role="alert">
-								No hay préstamos registrados en el sistema.
-							</div>
+						<% if ("LECTOR".equals(tipoUsuario)) { %>
+							<!-- Vista para LECTOR: Préstamos agrupados por estado -->
+							<% if (prestamos.isEmpty()) { %>
+								<div class="alert alert-info" role="alert">
+									No tienes préstamos registrados.
+								</div>
+							<% } else { %>
+								<!-- Préstamos Pendientes -->
+								<div class="card mb-3">
+									<div class="card-header bg-warning text-dark">
+										<h6 class="mb-0">
+											<i class="fas fa-clock"></i> Préstamos Pendientes 
+											<span class="badge badge-dark">
+												<% 
+													int contadorPendientes = 0;
+													for (DtPrestamo p : prestamos) {
+														if ("PENDIENTE".equals(p.getEstado().name())) {
+															contadorPendientes++;
+														}
+													}
+												%>
+												<%= contadorPendientes %>
+											</span>
+										</h6>
+									</div>
+									<div class="card-body">
+										<% 
+											List<DtPrestamo> pendientes = new java.util.ArrayList<DtPrestamo>();
+											for (DtPrestamo p : prestamos) {
+												if ("PENDIENTE".equals(p.getEstado().name())) {
+													pendientes.add(p);
+												}
+											}
+										%>
+										<% if (pendientes.isEmpty()) { %>
+											<p class="text-muted mb-0">No tienes préstamos pendientes.</p>
+										<% } else { %>
+											<div class="table-responsive">
+												<table class="table table-sm">
+													<thead>
+														<tr>
+															<th>Material</th>
+															<th>Fecha Solicitud</th>
+															<th>Fecha Devolución</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% for (DtPrestamo prestamo : pendientes) { %>
+															<tr>
+																<td>
+																	<% if (prestamo.getMaterial() instanceof publicadores.DtLibro) { %>
+																		<% publicadores.DtLibro libro = (publicadores.DtLibro) prestamo.getMaterial(); %>
+																		<strong><%= libro.getTitulo() %></strong><br>
+																		<small class="text-muted">Libro - <%= libro.getCantidadPaginas() %> páginas</small>
+																	<% } else if (prestamo.getMaterial() instanceof publicadores.DtArticulo) { %>
+																		<% publicadores.DtArticulo articulo = (publicadores.DtArticulo) prestamo.getMaterial(); %>
+																		<strong><%= articulo.getDescripcion() %></strong><br>
+																		<small class="text-muted">Artículo - <%= articulo.getPeso() %> kg</small>
+																	<% } %>
+																</td>
+																<td>
+																	<%
+																		Object fechaSolicitudObj = prestamo.getFechaSolicitud();
+																		String fechaSolicitudStr = "N/A";
+																		if (fechaSolicitudObj != null && dateFormat != null) {
+																			if (fechaSolicitudObj instanceof java.util.Date) {
+																				fechaSolicitudStr = dateFormat.format((java.util.Date) fechaSolicitudObj);
+																			} else if (fechaSolicitudObj instanceof javax.xml.datatype.XMLGregorianCalendar) {
+																				fechaSolicitudStr = dateFormat.format(((javax.xml.datatype.XMLGregorianCalendar) fechaSolicitudObj).toGregorianCalendar().getTime());
+																			} else {
+																				fechaSolicitudStr = fechaSolicitudObj.toString();
+																			}
+																		}
+																	%>
+																	<%= fechaSolicitudStr %>
+																</td>
+																<td>
+																	<%
+																		Object fechaDevolucionObj = prestamo.getFechaDevolucionEstimada();
+																		String fechaDevolucionStr = "N/A";
+																		if (fechaDevolucionObj != null && dateFormat != null) {
+																			if (fechaDevolucionObj instanceof java.util.Date) {
+																				fechaDevolucionStr = dateFormat.format((java.util.Date) fechaDevolucionObj);
+																			} else if (fechaDevolucionObj instanceof javax.xml.datatype.XMLGregorianCalendar) {
+																				fechaDevolucionStr = dateFormat.format(((javax.xml.datatype.XMLGregorianCalendar) fechaDevolucionObj).toGregorianCalendar().getTime());
+																			} else {
+																				fechaDevolucionStr = fechaDevolucionObj.toString();
+																			}
+																		}
+																	%>
+																	<%= fechaDevolucionStr %>
+																</td>
+															</tr>
+														<% } %>
+													</tbody>
+												</table>
+											</div>
+										<% } %>
+									</div>
+								</div>
+
+								<!-- Préstamos En Curso -->
+								<div class="card mb-3">
+									<div class="card-header bg-success text-white">
+										<h6 class="mb-0">
+											<i class="fas fa-book-open"></i> Préstamos En Curso 
+											<span class="badge badge-light">
+												<% 
+													int contadorEnCurso = 0;
+													for (DtPrestamo p : prestamos) {
+														if ("EN_CURSO".equals(p.getEstado().name())) {
+															contadorEnCurso++;
+														}
+													}
+												%>
+												<%= contadorEnCurso %>
+											</span>
+										</h6>
+									</div>
+									<div class="card-body">
+										<% 
+											List<DtPrestamo> enCurso = new java.util.ArrayList<DtPrestamo>();
+											for (DtPrestamo p : prestamos) {
+												if ("EN_CURSO".equals(p.getEstado().name())) {
+													enCurso.add(p);
+												}
+											}
+										%>
+										<% if (enCurso.isEmpty()) { %>
+											<p class="text-muted mb-0">No tienes préstamos en curso.</p>
+										<% } else { %>
+											<div class="table-responsive">
+												<table class="table table-sm">
+													<thead>
+														<tr>
+															<th>Material</th>
+															<th>Fecha Solicitud</th>
+															<th>Fecha Devolución</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% for (DtPrestamo prestamo : enCurso) { %>
+															<tr>
+																<td>
+																	<% if (prestamo.getMaterial() instanceof publicadores.DtLibro) { %>
+																		<% publicadores.DtLibro libro = (publicadores.DtLibro) prestamo.getMaterial(); %>
+																		<strong><%= libro.getTitulo() %></strong><br>
+																		<small class="text-muted">Libro - <%= libro.getCantidadPaginas() %> páginas</small>
+																	<% } else if (prestamo.getMaterial() instanceof publicadores.DtArticulo) { %>
+																		<% publicadores.DtArticulo articulo = (publicadores.DtArticulo) prestamo.getMaterial(); %>
+																		<strong><%= articulo.getDescripcion() %></strong><br>
+																		<small class="text-muted">Artículo - <%= articulo.getPeso() %> kg</small>
+																	<% } %>
+																</td>
+																<td>
+																	<%
+																		Object fechaSolicitudObj = prestamo.getFechaSolicitud();
+																		String fechaSolicitudStr = "N/A";
+																		if (fechaSolicitudObj != null && dateFormat != null) {
+																			if (fechaSolicitudObj instanceof java.util.Date) {
+																				fechaSolicitudStr = dateFormat.format((java.util.Date) fechaSolicitudObj);
+																			} else if (fechaSolicitudObj instanceof javax.xml.datatype.XMLGregorianCalendar) {
+																				fechaSolicitudStr = dateFormat.format(((javax.xml.datatype.XMLGregorianCalendar) fechaSolicitudObj).toGregorianCalendar().getTime());
+																			} else {
+																				fechaSolicitudStr = fechaSolicitudObj.toString();
+																			}
+																		}
+																	%>
+																	<%= fechaSolicitudStr %>
+																</td>
+																<td>
+																	<%
+																		Object fechaDevolucionObj = prestamo.getFechaDevolucionEstimada();
+																		String fechaDevolucionStr = "N/A";
+																		if (fechaDevolucionObj != null && dateFormat != null) {
+																			if (fechaDevolucionObj instanceof java.util.Date) {
+																				fechaDevolucionStr = dateFormat.format((java.util.Date) fechaDevolucionObj);
+																			} else if (fechaDevolucionObj instanceof javax.xml.datatype.XMLGregorianCalendar) {
+																				fechaDevolucionStr = dateFormat.format(((javax.xml.datatype.XMLGregorianCalendar) fechaDevolucionObj).toGregorianCalendar().getTime());
+																			} else {
+																				fechaDevolucionStr = fechaDevolucionObj.toString();
+																			}
+																		}
+																	%>
+																	<%= fechaDevolucionStr %>
+																</td>
+															</tr>
+														<% } %>
+													</tbody>
+												</table>
+											</div>
+										<% } %>
+									</div>
+								</div>
+
+								<!-- Préstamos Devueltos -->
+								<div class="card mb-3">
+									<div class="card-header bg-secondary text-white">
+										<h6 class="mb-0">
+											<i class="fas fa-check-circle"></i> Préstamos Devueltos 
+											<span class="badge badge-light">
+												<% 
+													int contadorDevueltos = 0;
+													for (DtPrestamo p : prestamos) {
+														if ("DEVUELTO".equals(p.getEstado().name())) {
+															contadorDevueltos++;
+														}
+													}
+												%>
+												<%= contadorDevueltos %>
+											</span>
+										</h6>
+									</div>
+									<div class="card-body">
+										<% 
+											List<DtPrestamo> devueltos = new java.util.ArrayList<DtPrestamo>();
+											for (DtPrestamo p : prestamos) {
+												if ("DEVUELTO".equals(p.getEstado().name())) {
+													devueltos.add(p);
+												}
+											}
+										%>
+										<% if (devueltos.isEmpty()) { %>
+											<p class="text-muted mb-0">No tienes préstamos devueltos.</p>
+										<% } else { %>
+											<div class="table-responsive">
+												<table class="table table-sm">
+													<thead>
+														<tr>
+															<th>Material</th>
+															<th>Fecha Solicitud</th>
+															<th>Fecha Devolución</th>
+														</tr>
+													</thead>
+													<tbody>
+														<% for (DtPrestamo prestamo : devueltos) { %>
+															<tr>
+																<td>
+																	<% if (prestamo.getMaterial() instanceof publicadores.DtLibro) { %>
+																		<% publicadores.DtLibro libro = (publicadores.DtLibro) prestamo.getMaterial(); %>
+																		<strong><%= libro.getTitulo() %></strong><br>
+																		<small class="text-muted">Libro - <%= libro.getCantidadPaginas() %> páginas</small>
+																	<% } else if (prestamo.getMaterial() instanceof publicadores.DtArticulo) { %>
+																		<% publicadores.DtArticulo articulo = (publicadores.DtArticulo) prestamo.getMaterial(); %>
+																		<strong><%= articulo.getDescripcion() %></strong><br>
+																		<small class="text-muted">Artículo - <%= articulo.getPeso() %> kg</small>
+																	<% } %>
+																</td>
+																<td>
+																	<%
+																		Object fechaSolicitudObj = prestamo.getFechaSolicitud();
+																		String fechaSolicitudStr = "N/A";
+																		if (fechaSolicitudObj != null && dateFormat != null) {
+																			if (fechaSolicitudObj instanceof java.util.Date) {
+																				fechaSolicitudStr = dateFormat.format((java.util.Date) fechaSolicitudObj);
+																			} else if (fechaSolicitudObj instanceof javax.xml.datatype.XMLGregorianCalendar) {
+																				fechaSolicitudStr = dateFormat.format(((javax.xml.datatype.XMLGregorianCalendar) fechaSolicitudObj).toGregorianCalendar().getTime());
+																			} else {
+																				fechaSolicitudStr = fechaSolicitudObj.toString();
+																			}
+																		}
+																	%>
+																	<%= fechaSolicitudStr %>
+																</td>
+																<td>
+																	<%
+																		Object fechaDevolucionObj = prestamo.getFechaDevolucionEstimada();
+																		String fechaDevolucionStr = "N/A";
+																		if (fechaDevolucionObj != null && dateFormat != null) {
+																			if (fechaDevolucionObj instanceof java.util.Date) {
+																				fechaDevolucionStr = dateFormat.format((java.util.Date) fechaDevolucionObj);
+																			} else if (fechaDevolucionObj instanceof javax.xml.datatype.XMLGregorianCalendar) {
+																				fechaDevolucionStr = dateFormat.format(((javax.xml.datatype.XMLGregorianCalendar) fechaDevolucionObj).toGregorianCalendar().getTime());
+																			} else {
+																				fechaDevolucionStr = fechaDevolucionObj.toString();
+																			}
+																		}
+																	%>
+																	<%= fechaDevolucionStr %>
+																</td>
+															</tr>
+														<% } %>
+													</tbody>
+												</table>
+											</div>
+										<% } %>
+									</div>
+								</div>
+							<% } %>
 						<% } else { %>
+							<!-- Vista para BIBLIOTECARIO: Tabla completa -->
+							<% if (prestamos.isEmpty()) { %>
+								<div class="alert alert-info" role="alert">
+									No hay préstamos registrados en el sistema.
+								</div>
+							<% } else { %>
 							<div class="table-responsive">
 								<table class="table table-striped table-hover">
 									<thead class="thead-dark">
@@ -183,6 +496,7 @@
 							<div class="mt-3">
 								<small class="text-muted">Total de préstamos: <%= prestamos.size() %></small>
 							</div>
+							<% } %>
 						<% } %>
 					</div>
 				</div>

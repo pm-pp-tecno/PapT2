@@ -10,6 +10,10 @@
 	List<Object> materiales = (List<Object>) request.getAttribute("materiales");
 	String errorMessage = (String) request.getAttribute("errorMessage");
 	SimpleDateFormat dateFormat = (SimpleDateFormat) request.getAttribute("dateFormat");
+	
+	// Obtener datos del usuario de la sesión
+	String usuario = (String) session.getAttribute("usuario");
+	String tipoUsuario = (String) session.getAttribute("tipoUsuario");
     
 	// Si no hay datos, inicializar lista vacía
 	if (materiales == null) {
@@ -55,6 +59,16 @@
 				<li class="nav-item">
 					<a class="nav-link" href="consultas">Consultas</a>
 				</li>
+		</ul>
+		<ul class="navbar-nav ml-auto">
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<%= usuario %> (<%= tipoUsuario %>)
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<a class="dropdown-item" href="logout">Cerrar Sesión</a>
+				</div>
+			</li>
 		</ul>
 	</div>
 	</nav>
