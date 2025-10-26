@@ -28,23 +28,24 @@ public class AuthenticationFilter implements Filter {
         HttpSession session = httpRequest.getSession(false);
         String requestURI = httpRequest.getRequestURI();
         
-        // Verificar si está intentando acceder a login.jsp o al servlet /login
+        // Verificar si está intentando acceder a login.jsp, /login o al servlet /loginProcess
         boolean isLoginPage = requestURI.endsWith("login.jsp") || requestURI.endsWith("/login");
+        boolean isLoginProcess = requestURI.endsWith("/loginProcess");
         
         // Verificar si hay una sesión activa
         boolean isLoggedIn = (session != null && session.getAttribute("usuario") != null);
         
-        // Si el usuario NO está logueado y NO está en login, redirigir a login
-        if (!isLoggedIn && !isLoginPage) {
+        // Si el usuario NO está logueado y NO está en login ni en loginProcess, redirigir a login
+        if (!isLoggedIn && !isLoginPage && !isLoginProcess) {
             System.out.println("Usuario no autenticado, redirigiendo a login desde: " + requestURI);
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/login.jsp");
+            httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
             return;
         }
         
         // Si el usuario está logueado y trata de acceder a login, redirigir a index
         if (isLoggedIn && isLoginPage) {
             System.out.println("Usuario ya autenticado, redirigiendo a index desde login");
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/index.jsp");
+            httpResponse.sendRedirect(httpRequest.getContextPath() + "/index");
             return;
         }
         

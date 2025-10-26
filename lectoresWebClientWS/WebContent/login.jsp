@@ -194,7 +194,7 @@
 					
 					// Enviar datos al servlet
 					$.ajax({
-						url: 'login',
+						url: 'loginProcess',
 						type: 'POST',
 						data: {
 							email: email,
@@ -221,7 +221,7 @@
 								}
 								
 								// Redirigir a la página principal
-								window.location.href = 'index.jsp';
+								window.location.href = 'index';
 							} else {
 								// Error de login - mostrar mensaje claro
 								var mensaje = '✗ Usuario incorrecto\n\n';
