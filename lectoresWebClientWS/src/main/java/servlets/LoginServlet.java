@@ -5,6 +5,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import publicadores.ControladorPublish;
 import publicadores.ControladorPublishService;
@@ -55,6 +56,13 @@ public class LoginServlet extends HttpServlet {
                 String id = partes[1];
                 String nombre = partes[2];
                 
+                // Guardar en sesión
+                HttpSession session = request.getSession();
+                session.setAttribute("usuario", nombre);
+                session.setAttribute("tipoUsuario", tipo);
+                session.setAttribute("email", email);
+                session.setAttribute("id", id);
+                
                 jsonResponse = String.format(
                     "{\"success\":true,\"message\":\"Login exitoso\",\"userType\":\"%s\",\"userName\":\"%s\"}",
                     tipo, nombre
@@ -66,6 +74,13 @@ public class LoginServlet extends HttpServlet {
                 String tipo = partes[0];
                 String id = partes[1];
                 String nombre = partes[2];
+                
+                // Guardar en sesión
+                HttpSession session = request.getSession();
+                session.setAttribute("usuario", nombre);
+                session.setAttribute("tipoUsuario", tipo);
+                session.setAttribute("email", email);
+                session.setAttribute("id", id);
                 
                 jsonResponse = String.format(
                     "{\"success\":true,\"message\":\"Login exitoso\",\"userType\":\"%s\",\"userName\":\"%s\"}",

@@ -1,5 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%
+	String usuario = (String) session.getAttribute("usuario");
+	String tipoUsuario = (String) session.getAttribute("tipoUsuario");
+	if (usuario == null) {
+		response.sendRedirect("login.jsp");
+		return;
+	}
+%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -17,7 +25,7 @@
 
 <body>
 	<nav class="navbar navbar-expand-lg navbar-light bg-light"> <a
-		class="navbar-brand" href="index">Lectores UY</a>
+		class="navbar-brand" href="index.jsp">Lectores UY</a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse"
 		data-target="#navbarSupportedContent"
 		aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -33,6 +41,16 @@
 			<li class="nav-item"><a class="nav-link" href="gestionMateriales">Gestion Materiales</a></li>
 			<li class="nav-item"><a class="nav-link" href="gestionPrestamos">Gestion Prestamos</a></li>
 			<li class="nav-item"><a class="nav-link" href="consultas">Consultas</a></li>
+		</ul>
+		<ul class="navbar-nav ml-auto">
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<%= usuario %> (<%= tipoUsuario %>)
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<a class="dropdown-item" href="logout">Cerrar Sesión</a>
+				</div>
+			</li>
 		</ul>
 	</div>
 	</nav>
@@ -57,6 +75,11 @@
 	</div-->
 
 
+
+	<div class="container mt-4">
+		<h1>Bienvenido <%= usuario %></h1>
+		<p>Estás logeado como: <strong><%= tipoUsuario %></strong></p>
+	</div>
 
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->

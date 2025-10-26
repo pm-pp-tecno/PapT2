@@ -111,6 +111,35 @@
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>servlets.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+    <!-- Authentication Filter -->
+    <filter>
+        <filter-name>AuthenticationFilter</filter-name>
+        <filter-class>servlets.AuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthenticationFilter</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+        <url-pattern>/gestionUsuarios</url-pattern>
+        <url-pattern>/gestionMateriales</url-pattern>
+        <url-pattern>/gestionPrestamos</url-pattern>
+        <url-pattern>/editarUsuario</url-pattern>
+        <url-pattern>/editarMaterial</url-pattern>
+        <url-pattern>/editarPrestamo</url-pattern>
+        <url-pattern>/agregarMaterial</url-pattern>
+        <url-pattern>/agregarPrestamo</url-pattern>
+        <url-pattern>/filtroMateriales</url-pattern>
+        <url-pattern>/materialesData</url-pattern>
+        <url-pattern>/consultas</url-pattern>
+    </filter-mapping>
 
     <!-- Session Configuration -->
     <session-config>
