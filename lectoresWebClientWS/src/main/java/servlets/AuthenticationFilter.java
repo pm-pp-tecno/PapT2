@@ -49,6 +49,22 @@ public class AuthenticationFilter implements Filter {
             return;
         }
         
+        // Control de acceso basado en roles
+        if (isLoggedIn) {
+            String tipoUsuario = (String) session.getAttribute("tipoUsuario");
+            
+            // Páginas que solo pueden ver los BIBLIOTECARIOS
+            boolean isGestionUsuarios = requestURI.endsWith("gestionUsuarios.jsp") || requestURI.endsWith("/gestionUsuarios");
+            boolean isGestionMateriales = requestURI.endsWith("gestionMateriales.jsp") || requestURI.endsWith("/gestionMateriales");
+            boolean isConsultas = requestURI.endsWith("consultas.jsp") || requestURI.endsWith("/consultas");
+            
+            if ((isGestionUsuarios || isGestionMateriales || isConsultas) && !"BIBLIOTECARIO".equals(tipoUsuario)) {
+                System.out.println("Usuario " + tipoUsuario + " intentando acceder a página restringida: " + requestURI);
+                httpResponse.sendRedirect(httpRequest.getContextPath() + "/index");
+                return;
+            }
+        }
+        
         // Permitir que la request continúe
         chain.doFilter(request, response);
     }

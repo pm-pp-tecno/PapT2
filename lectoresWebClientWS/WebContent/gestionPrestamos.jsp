@@ -50,6 +50,8 @@
 	</button>
 	<div class="collapse navbar-collapse" id="navbarSupportedContent">
 		<ul class="navbar-nav mr-auto">
+			<% if ("BIBLIOTECARIO".equals(tipoUsuario)) { %>
+				<!-- Menú completo para BIBLIOTECARIOS -->
 				<li class="nav-item">
 					<a class="nav-link" href="gestionUsuarios">Gestion Usuarios</a>
 				</li>
@@ -62,6 +64,12 @@
 				<li class="nav-item">
 					<a class="nav-link" href="consultas">Consultas</a>
 				</li>
+			<% } else { %>
+				<!-- Menú limitado para LECTORES -->
+				<li class="nav-item active">
+					<a class="nav-link" href="gestionPrestamos">Mis Préstamos</a>
+				</li>
+			<% } %>
 		</ul>
 		<ul class="navbar-nav ml-auto">
 			<li class="nav-item dropdown">

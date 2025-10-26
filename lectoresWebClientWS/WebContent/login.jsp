@@ -11,6 +11,10 @@
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
 	crossorigin="anonymous">
+<link rel="stylesheet" 
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+	integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+	crossorigin="anonymous">
 
 <style>
 	body {
@@ -117,6 +121,41 @@
 	.forgot-password a:hover {
 		text-decoration: underline;
 	}
+	
+	/* Estilos para mensajes Bootstrap */
+	#mensajeContainer {
+		margin-bottom: 20px;
+	}
+	
+	#mensajeAlert {
+		border-radius: 8px;
+		border: none;
+		box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+		font-size: 14px;
+		line-height: 1.5;
+	}
+	
+	#mensajeAlert.alert-success {
+		background-color: #d4edda;
+		color: #155724;
+		border-left: 4px solid #28a745;
+	}
+	
+	#mensajeAlert.alert-danger {
+		background-color: #f8d7da;
+		color: #721c24;
+		border-left: 4px solid #dc3545;
+	}
+	
+	#mensajeAlert.alert-warning {
+		background-color: #fff3cd;
+		color: #856404;
+		border-left: 4px solid #ffc107;
+	}
+	
+	#mensajeAlert i {
+		margin-right: 8px;
+	}
 </style>
 
 <title>Login - Lectores UY</title>
@@ -133,6 +172,13 @@
 				</div>
 				<h2>Bienvenido</h2>
 				<p>Sistema de Biblioteca Lectores UY</p>
+			</div>
+			
+			<!-- Contenedor para mensajes Bootstrap -->
+			<div id="mensajeContainer" class="mb-3" style="display: none;">
+				<div id="mensajeAlert" class="alert" role="alert">
+					<span id="mensajeTexto"></span>
+				</div>
 			</div>
 			
 			<form id="loginForm">
@@ -181,11 +227,48 @@
 
 	<script>
 		$(document).ready(function() {
+			// Función para mostrar mensajes Bootstrap
+			function mostrarMensaje(texto, tipo) {
+				var alertClass = 'alert-info';
+				var icono = '';
+				
+				if (tipo === 'success') {
+					alertClass = 'alert-success';
+					icono = '<i class="fas fa-check-circle"></i> ';
+				} else if (tipo === 'error') {
+					alertClass = 'alert-danger';
+					icono = '<i class="fas fa-exclamation-circle"></i> ';
+				} else if (tipo === 'warning') {
+					alertClass = 'alert-warning';
+					icono = '<i class="fas fa-exclamation-triangle"></i> ';
+				}
+				
+				$('#mensajeAlert').removeClass('alert-success alert-danger alert-warning alert-info')
+								  .addClass(alertClass);
+				$('#mensajeTexto').html(icono + texto);
+				$('#mensajeContainer').show();
+				
+				// Auto-ocultar después de 5 segundos para mensajes de éxito
+				if (tipo === 'success') {
+					setTimeout(function() {
+						$('#mensajeContainer').fadeOut();
+					}, 5000);
+				}
+			}
+			
+			// Función para ocultar mensajes
+			function ocultarMensaje() {
+				$('#mensajeContainer').hide();
+			}
+			
 			$('#loginForm').on('submit', function(e) {
 				e.preventDefault();
 				
 				var email = $('#email').val();
 				var password = $('#password').val();
+				
+				// Ocultar mensajes anteriores
+				ocultarMensaje();
 				
 				if (email && password) {
 					// Deshabilitar el botón mientras se procesa
@@ -211,31 +294,31 @@
 								var tipoUsuario = response.userType;
 								var nombreUsuario = response.userName;
 								
-								// Mostrar alerta de éxito más clara
-								if (tipoUsuario === 'LECTOR') {
-									alert('✓ Usuario correcto\n\nBienvenido: ' + nombreUsuario + '\nTipo de usuario: Lector');
-								} else if (tipoUsuario === 'BIBLIOTECARIO') {
-									alert('✓ Usuario correcto\n\nBienvenido: ' + nombreUsuario + '\nTipo de usuario: Bibliotecario');
-								} else {
-									alert('✓ Usuario correcto\n\nBienvenido: ' + nombreUsuario);
-								}
+								// Mostrar mensaje de éxito con Bootstrap
+								var mensajeExito = '<strong>¡Bienvenido!</strong><br>';
+								mensajeExito += 'Usuario: ' + nombreUsuario + '<br>';
+								mensajeExito += 'Tipo: ' + (tipoUsuario === 'LECTOR' ? 'Lector' : 'Bibliotecario');
 								
-								// Redirigir a la página principal
-								window.location.href = 'index';
+								mostrarMensaje(mensajeExito, 'success');
+								
+								// Redirigir a la página principal después de un breve delay
+								setTimeout(function() {
+									window.location.href = 'index';
+								}, 2000);
 							} else {
 								// Error de login - mostrar mensaje claro
-								var mensaje = '✗ Usuario incorrecto\n\n';
+								var mensaje = '<strong>Error de autenticación</strong><br>';
 								if (response.message && response.message.includes('Credenciales inválidas')) {
 									mensaje += 'Las credenciales ingresadas no son válidas. Por favor, verifique su email y contraseña.';
 								} else {
 									mensaje += (response.message || 'Error de autenticación');
 								}
-								alert(mensaje);
+								mostrarMensaje(mensaje, 'error');
 							}
 						},
 						error: function(xhr, status, error) {
 							console.error('Error en AJAX:', error);
-							alert('✗ Error al conectar con el servidor\n\nPor favor, intente nuevamente más tarde.');
+							mostrarMensaje('<strong>Error de conexión</strong><br>Por favor, intente nuevamente más tarde.', 'error');
 						},
 						complete: function() {
 							// Rehabilitar el botón
@@ -243,7 +326,7 @@
 						}
 					});
 				} else {
-					alert('Por favor, complete todos los campos');
+					mostrarMensaje('<strong>Campos requeridos</strong><br>Por favor, complete todos los campos.', 'warning');
 				}
 			});
 		});
