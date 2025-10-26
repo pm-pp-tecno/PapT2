@@ -56,6 +56,20 @@ public class BibliotecarioDAO {
             return null;
         }
     }
+    
+    public Bibliotecario buscarPorEmail(String email) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<Bibliotecario> query = session.createQuery(
+                "FROM Bibliotecario WHERE email = :email", 
+                Bibliotecario.class
+            );
+            query.setParameter("email", email);
+            return query.uniqueResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public List<Bibliotecario> encontrarTodos() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {

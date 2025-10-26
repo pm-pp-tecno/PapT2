@@ -3,8 +3,6 @@ package lectoresuy.biblioteca.service;
 import lectoresuy.biblioteca.dao.BibliotecarioDAO;
 import lectoresuy.biblioteca.datatypes.DtBibliotecario;
 import lectoresuy.biblioteca.entidades.Bibliotecario;
-import lectoresuy.biblioteca.entidades.Lector;
-import lectoresuy.biblioteca.entidades.Lector.EstadoLector;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +35,10 @@ public class ManejadorBibliotecario {
     
     public Bibliotecario buscarBibliotecario(String numeroEmpleado) {
         return bibliotecarioDAO.encontrarPorNumeroEmpleado(numeroEmpleado);
+    }
+    
+    public Bibliotecario buscarPorEmail(String email) {
+        return bibliotecarioDAO.buscarPorEmail(email);
     }
 
     public List<DtBibliotecario> listarBibliotecarios() {

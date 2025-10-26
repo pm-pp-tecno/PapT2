@@ -21,13 +21,13 @@ public class ControladorBibliotecario implements IControladorBibliotecario {
 
 
 	@Override
-	public void agregarBibliotecario(String nombre, String email, String numeroEmpleado)
+	public void agregarBibliotecario(String nombre, String email, String password, String numeroEmpleado)
 			throws BibliotecarioRepetidoExcepcion {
 		ManejadorBibliotecario mB = ManejadorBibliotecario.getInstancia();
         Bibliotecario bibliotecario = mB.buscarBibliotecario(numeroEmpleado);
         if (bibliotecario != null)
             throw new BibliotecarioRepetidoExcepcion("El número de empleado " + numeroEmpleado + " ya esta registrado");
-        bibliotecario = new Bibliotecario(nombre, email, numeroEmpleado);
+        bibliotecario = new Bibliotecario(nombre, email, password, numeroEmpleado);
 		mB.guardarBibliotecario(bibliotecario);
 	}
 

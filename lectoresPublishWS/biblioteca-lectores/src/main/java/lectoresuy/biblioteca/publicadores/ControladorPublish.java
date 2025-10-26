@@ -63,9 +63,9 @@ public class ControladorPublish {
 	// Agregar los metodos de Biblioteca con el formato de abajo.
 	//LOS MÉTODOS QUE VAMOS A PUBLICAR
 	@WebMethod
-	public void agregarBibliotecario(String nombre, String email, String numeroEmpleado){
+	public void agregarBibliotecario(String nombre, String email, String password, String numeroEmpleado){
 		try {
-			iconB.agregarBibliotecario(nombre, email, numeroEmpleado);
+			iconB.agregarBibliotecario(nombre, email, password, numeroEmpleado);
 		} catch (Exception ex) {
 			throw new WebServiceException("Error al agregar bibliotecario: " + ex.getMessage(), ex);
 		}
@@ -73,9 +73,9 @@ public class ControladorPublish {
 
 	// Métodos de Lector
 	@WebMethod
-	public void agregarLector(String nombre, String email, String direccion, Date fechaRegistro, String estado, String zona) {
+	public void agregarLector(String nombre, String email, String password, String direccion, Date fechaRegistro, String estado, String zona) {
 		try {
-			iconL.agregarLector(nombre, email, direccion, fechaRegistro, EstadoLector.valueOf(estado), zona);
+			iconL.agregarLector(nombre, email, password, direccion, fechaRegistro, EstadoLector.valueOf(estado), zona);
 		} catch (Exception ex) {
 			throw new WebServiceException("Error al agregar lector: " + ex.getMessage(), ex);
 		}
@@ -409,6 +409,36 @@ public class ControladorPublish {
 	@WebMethod
 	public boolean lectorEstaSuspendido(String emailLector) {
 		return iconL.lectorEstaSuspendido(emailLector);
+	}
+
+	@WebMethod
+	public String 
+	autenticarUsuario(String email, String password) {
+		try {
+			// Buscar en lectores
+			lectoresuy.biblioteca.service.ManejadorLector mL = lectoresuy.biblioteca.service.ManejadorLector.getInstancia();
+			lectoresuy.biblioteca.entidades.Lector lector = mL.buscarLector(email);
+			
+			if (lector != null && lector.getPassword() != null && lector.getPassword().equals(password)) {
+				// Usuario autenticado como Lector
+				return "LECTOR:" + lector.getId() + ":" + lector.getNombre();
+			}
+			
+			// Buscar en bibliotecarios
+			lectoresuy.biblioteca.service.ManejadorBibliotecario mB = lectoresuy.biblioteca.service.ManejadorBibliotecario.getInstancia();
+			lectoresuy.biblioteca.entidades.Bibliotecario bibliotecario = mB.buscarPorEmail(email);
+			
+			if (bibliotecario != null && bibliotecario.getPassword() != null && bibliotecario.getPassword().equals(password)) {
+				// Usuario autenticado como Bibliotecario
+				return "BIBLIOTECARIO:" + bibliotecario.getId() + ":" + bibliotecario.getNombre();
+			}
+			
+			// Credenciales inválidas
+			return "ERROR: Credenciales inválidas";
+			
+		} catch (Exception ex) {
+			throw new WebServiceException("Error al autenticar usuario: " + ex.getMessage(), ex);
+		}
 	}
 
 }

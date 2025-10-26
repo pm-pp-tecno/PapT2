@@ -16,7 +16,7 @@ import lectoresuy.biblioteca.datatypes.DtArticulo;
 
 public interface IControladorLector {
 	
-	public void agregarLector(String nombre, String email, String direccion, Date fechaRegistro, EstadoLector estado, String zona) throws LectorRepetidoExcepcion;
+	public void agregarLector(String nombre, String email, String password, String direccion, Date fechaRegistro, EstadoLector estado, String zona) throws LectorRepetidoExcepcion;
 	
 	public List<DtLector> listarLectores();
 	

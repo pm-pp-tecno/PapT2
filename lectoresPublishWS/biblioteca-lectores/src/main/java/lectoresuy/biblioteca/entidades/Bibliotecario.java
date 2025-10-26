@@ -25,6 +25,11 @@ public class Bibliotecario extends Usuario {
         this.numeroEmpleado = numeroEmpleado;
     }
 
+    public Bibliotecario(String nombre, String email, String password, String numeroEmpleado) {
+        super(nombre, email, password);
+        this.numeroEmpleado = numeroEmpleado;
+    }
+
     public String getNumeroEmpleado() {
         return numeroEmpleado;
     }

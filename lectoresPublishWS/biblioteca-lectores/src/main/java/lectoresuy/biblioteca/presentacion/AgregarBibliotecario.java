@@ -17,6 +17,7 @@ public class AgregarBibliotecario extends JInternalFrame {
     // private ManejadorLector manejadorLector;
     private JTextField nombreField;
     private JTextField emailField;
+    private JPasswordField passwordField;
     private JTextField numeroEmpleadoField;
     
     public AgregarBibliotecario(IControladorBibliotecario icon) {
@@ -51,12 +52,21 @@ public class AgregarBibliotecario extends JInternalFrame {
         emailField = new JTextField(20);
         panel.add(emailField, gbc.clone());
         
-        // Direccion
+        // Password
         gbc.gridx = 0;
         gbc.gridy = 2;
-        panel.add(new JLabel("Número empleado:"), gbc.clone());
+        panel.add(new JLabel("Contraseña:"), gbc.clone());
         gbc.gridx = 1;
         gbc.gridy = 2;
+        passwordField = new JPasswordField(20);
+        panel.add(passwordField, gbc.clone());
+        
+        // Número empleado
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panel.add(new JLabel("Número empleado:"), gbc.clone());
+        gbc.gridx = 1;
+        gbc.gridy = 3;
         numeroEmpleadoField = new JTextField(20);
         panel.add(numeroEmpleadoField, gbc.clone());
 
@@ -65,7 +75,7 @@ public class AgregarBibliotecario extends JInternalFrame {
         JButton cancelarButton = new JButton("Cancelar");
         
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         JPanel buttonPanel = new JPanel();
@@ -78,19 +88,21 @@ public class AgregarBibliotecario extends JInternalFrame {
             try {
                 String nombre = nombreField.getText().trim();
                 String email = emailField.getText().trim();
+                String password = new String(passwordField.getPassword()).trim();
                 String numeroEmpleado = numeroEmpleadoField.getText().trim();
 
-                if (nombre.isEmpty() || email.isEmpty() || numeroEmpleado.isEmpty()) {
+                if (nombre.isEmpty() || email.isEmpty() || password.isEmpty() || numeroEmpleado.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
                 // Llama al controlador para guardar el bibliotecario (delega la persistencia a Hibernate)
-                icon.agregarBibliotecario(nombre, email, numeroEmpleado);
+                icon.agregarBibliotecario(nombre, email, password, numeroEmpleado);
 
                 JOptionPane.showMessageDialog(this, "Bibliotecario registrado con éxito.");
                 nombreField.setText("");
                 emailField.setText("");
+                passwordField.setText("");
                 numeroEmpleadoField.setText("");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error al registrar el bibliotecario: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

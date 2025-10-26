@@ -22,8 +22,11 @@ public class Usuario {
     @Column(name = "nombre")
     private String nombre;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false)
     private String email;
+
+    @Column(name = "password")
+    private String password;
 
     // Constructores, getters y setters
 
@@ -34,6 +37,12 @@ public class Usuario {
     public Usuario(String nombre, String email) {
         this.nombre = nombre;
         this.email = email;
+    }
+
+    public Usuario(String nombre, String email, String password) {
+        this.nombre = nombre;
+        this.email = email;
+        this.password = password;
     }
 
     public Long getId() {
@@ -58,5 +67,13 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

@@ -29,7 +29,7 @@ public class ControladorLector implements IControladorLector {
 	}
 
 	@Override
-	public void agregarLector(String nombre, String email, String direccion, Date fechaRegistro, EstadoLector estado, String zona) throws LectorRepetidoExcepcion{
+	public void agregarLector(String nombre, String email, String password, String direccion, Date fechaRegistro, EstadoLector estado, String zona) throws LectorRepetidoExcepcion{
 
 		//Configuramos el EMF a través de la unidad de persistencia
 		emf = Persistence.createEntityManagerFactory("Conexion");
@@ -45,8 +45,8 @@ public class ControladorLector implements IControladorLector {
         if (lector != null)
             throw new LectorRepetidoExcepcion("El email " + email + " ya esta registrado");
 		
-		//Construimos el objeto a persistir
-        lector = new Lector(nombre, email, direccion, fechaRegistro, estado, zona);
+		//Construimos el objeto a persistir CON password
+        lector = new Lector(nombre, email, password, direccion, fechaRegistro, estado, zona);
 		
 		//Persistimos el objeto
 		em.persist(lector);
@@ -56,15 +56,6 @@ public class ControladorLector implements IControladorLector {
 		
 		//Cerramos el EntityManager
 		em.close();
-
-		/*
-		ManejadorLector mL = ManejadorLector.getInstancia();
-        Lector lector = mL.buscarLector(email);
-        if (lector != null)
-            throw new LectorRepetidoExcepcion("El email " + email + " ya esta registrado");
-        lector = new Lector(nombre, email, direccion, fechaRegistro, estado, zona);
-		mL.guardarLector(lector);
-		*/
 	}
 
 	@Override

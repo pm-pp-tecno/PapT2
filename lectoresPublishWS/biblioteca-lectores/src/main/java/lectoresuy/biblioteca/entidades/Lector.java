@@ -49,6 +49,14 @@ public class Lector extends Usuario {
         this.zona = zona;
     }
 
+    public Lector(String nombre, String email, String password, String direccion, Date fechaRegistro, EstadoLector estado, String zona) {
+        super(nombre, email, password);
+        this.direccion = direccion;
+        this.fechaRegistro = fechaRegistro;
+        this.estado = estado;
+        this.zona = zona;
+    }
+
     public String getDireccion() {
         return direccion;
     }

@@ -20,7 +20,7 @@ import java.util.List;
 
 public interface IControladorBibliotecario {
 	
-	public void agregarBibliotecario(String nombre, String email, String numeroEmpleado) throws BibliotecarioRepetidoExcepcion;
+	public void agregarBibliotecario(String nombre, String email, String password, String numeroEmpleado) throws BibliotecarioRepetidoExcepcion;
 
 	public List<DtBibliotecario> listarBibliotecarios();
 	
