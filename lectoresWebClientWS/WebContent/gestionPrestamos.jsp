@@ -17,6 +17,12 @@
 	// Obtener datos del usuario de la sesión
 	String usuario = (String) session.getAttribute("usuario");
 	String tipoUsuario = (String) session.getAttribute("tipoUsuario");
+	
+	// Obtener datos para los select de los modales
+	DtLector[] lectores = (DtLector[]) request.getAttribute("lectores");
+	DtBibliotecario[] bibliotecarios = (DtBibliotecario[]) request.getAttribute("bibliotecarios");
+	DtLibro[] libros = (DtLibro[]) request.getAttribute("libros");
+	DtArticulo[] articulos = (DtArticulo[]) request.getAttribute("articulos");
     
 	// Si no hay datos, inicializar lista vacía
 	if (prestamos == null) {
@@ -631,19 +637,18 @@
 								<div class="form-group">
 									<label for="agregar-lector">Lector *</label>
 									<% if ("LECTOR".equals(tipoUsuario)) { %>
-										<%
-											String emailLector = (String) session.getAttribute("email");
-											DtLector[] lectores = (DtLector[]) request.getAttribute("lectores");
-											String nombreCompleto = usuario;
-											if (lectores != null) {
-												for (DtLector lector : lectores) {
-													if (lector.getEmail().equals(emailLector)) {
-														nombreCompleto = lector.getNombre() + " (" + lector.getEmail() + ")";
-														break;
-													}
+									<%
+										String emailLector = (String) session.getAttribute("email");
+										String nombreCompleto = usuario;
+										if (lectores != null) {
+											for (DtLector lector : lectores) {
+												if (lector.getEmail().equals(emailLector)) {
+													nombreCompleto = lector.getNombre() + " (" + lector.getEmail() + ")";
+													break;
 												}
 											}
-										%>
+										}
+									%>
 										<input type="text" class="form-control" value="<%= nombreCompleto %>" disabled>
 										<input type="hidden" id="agregar-lector" name="emailLector" value="<%= emailLector %>">
 										<small class="form-text text-muted">Solicitando préstamo como: <%= usuario %></small>
@@ -651,7 +656,6 @@
 										<select class="form-control" id="agregar-lector" name="emailLector" required>
 											<option value="">Seleccione un lector</option>
 											<%
-												DtLector[] lectores = (DtLector[]) request.getAttribute("lectores");
 												if (lectores != null) {
 													for (DtLector lector : lectores) {
 														String nombreCompleto = lector.getNombre() + " (" + lector.getEmail() + ")";
@@ -675,7 +679,6 @@
 									<select class="form-control" id="agregar-bibliotecario" name="numeroBibliotecario" required>
 										<option value="">Seleccione un bibliotecario</option>
 										<%
-											DtBibliotecario[] bibliotecarios = (DtBibliotecario[]) request.getAttribute("bibliotecarios");
 											if (bibliotecarios != null) {
 												for (DtBibliotecario bibliotecario : bibliotecarios) {
 													String nombreCompleto = bibliotecario.getNombre() + " (" + bibliotecario.getNumeroEmpleado() + ")";
@@ -732,29 +735,121 @@
 				<form id="editarPrestamoForm">
 					<div class="modal-body">
 						<input type="hidden" id="edit-id" name="id_prestamo" value="">
+						
+						<!-- Sección de Estado del Préstamo (diferenciada) -->
+						<div class="card border-primary mb-3">
+							<div class="card-header bg-primary text-white">
+								<h6 class="mb-0"><i class="fas fa-info-circle"></i> Estado del Préstamo</h6>
+							</div>
+							<div class="card-body">
+								<div class="row">
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="edit-estado"><strong>Estado del Préstamo *</strong></label>
+											<select class="form-control form-control-lg" id="edit-estado" name="estado" required>
+												<option value="PENDIENTE">Pendiente</option>
+												<option value="EN_CURSO">En Curso</option>
+												<option value="DEVUELTO">Devuelto</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Información del Préstamo -->
+						<div class="alert alert-light border">
+							<strong>ID Préstamo:</strong> <span id="edit-info-id"></span><br>
+							<span id="edit-info-prestamo"></span>
+						</div>
+						
+						<!-- Campos editables -->
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
-									<label for="edit-estado">Estado del Préstamo *</label>
-									<select class="form-control" id="edit-estado" name="estado" required>
-										<option value="PENDIENTE">Pendiente</option>
-										<option value="EN_CURSO">En Curso</option>
-										<option value="DEVUELTO">Devuelto</option>
+									<label for="edit-lector">Lector *</label>
+								<select class="form-control" id="edit-lector" name="emailLector" required>
+									<option value="">Seleccione un lector</option>
+									<%
+										if (lectores != null) {
+												for (DtLector lector : lectores) {
+													String nombreCompleto = lector.getNombre() + " (" + lector.getEmail() + ")";
+													boolean suspendido = lector.getNombre().contains("(SUSPENDIDO)");
+													String optionClass = suspendido ? "disabled" : "";
+													String optionStyle = suspendido ? "color: #999;" : "";
+										%>
+										<option value="<%= lector.getEmail() %>" class="<%= optionClass %>" style="<%= optionStyle %>" <%= suspendido ? "disabled" : "" %>><%= nombreCompleto %></option>
+										<%
+												}
+											}
+										%>
 									</select>
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="form-group">
-									<label for="edit-fechaDevolucion">Fecha de Devolución</label>
-									<input type="date" class="form-control" id="edit-fechaDevolucion" name="fechaDevolucion">
+									<label for="edit-bibliotecario">Bibliotecario *</label>
+								<select class="form-control" id="edit-bibliotecario" name="numeroBibliotecario" required>
+									<option value="">Seleccione un bibliotecario</option>
+									<%
+										if (bibliotecarios != null) {
+												for (DtBibliotecario bibliotecario : bibliotecarios) {
+													String nombreCompleto = bibliotecario.getNombre() + " (" + bibliotecario.getNumeroEmpleado() + ")";
+										%>
+										<option value="<%= bibliotecario.getNumeroEmpleado() %>"><%= nombreCompleto %></option>
+										<%
+												}
+											}
+										%>
+									</select>
 								</div>
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-md-12">
-								<div class="alert alert-info">
-									<strong>Información del Préstamo:</strong><br>
-									<span id="edit-info-prestamo"></span>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="edit-material">Material</label>
+								<select class="form-control" id="edit-material" name="idMaterial">
+									<option value="">-- No disponible --</option>
+									<%
+										if (libros != null) {
+												for (DtLibro libro : libros) {
+													String titulo = libro.getTitulo() != null ? libro.getTitulo() : "Sin título";
+													int paginas = libro.getCantidadPaginas();
+													String descripcion = titulo + " (" + paginas + " páginas) - LIBRO";
+													descripcion = descripcion.replace("\"", "\\\"").replace("\n", " ").replace("\r", " ");
+										%>
+										<option value="LIBRO_<%= libro.getId() %>"><%= descripcion %></option>
+										<%
+												}
+											}
+											
+											if (articulos != null) {
+												for (DtArticulo articulo : articulos) {
+													String descripcion = articulo.getDescripcion() != null ? articulo.getDescripcion() : "Sin descripción";
+													descripcion = descripcion.replace("\"", "\\\"").replace("\n", " ").replace("\r", " ");
+										%>
+										<option value="ARTICULO_<%= articulo.getId() %>"><%= descripcion %> - ARTÍCULO</option>
+										<%
+												}
+											}
+										%>
+									</select>
+									<small class="form-text text-muted">Material actual</small>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="edit-fechaSolicitud">Fecha de Solicitud</label>
+									<input type="date" class="form-control" id="edit-fechaSolicitud" name="fechaSolicitud">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="edit-fechaDevolucion">Fecha de Devolución Estimada *</label>
+									<input type="date" class="form-control" id="edit-fechaDevolucion" name="fechaDevolucion" required>
 								</div>
 							</div>
 						</div>
@@ -854,9 +949,14 @@
 			// Buscar el préstamo en la tabla para obtener sus datos
 			var row = $('button[onclick="editarPrestamo(\'' + id + '\')"]').closest('tr');
 			var estadoTexto = row.find('span.badge').text().trim();
-			var fechaDevolucion = row.find('td:eq(5)').text().trim(); // Columna de fecha de devolución
+			var fechaSolicitud = row.find('td:eq(4)').text().trim(); // Columna de fecha de solicitud (índice 4)
+			var fechaDevolucion = row.find('td:eq(5)').text().trim(); // Columna de fecha de devolución (índice 5)
+			var lectorTd = row.find('td:eq(1)').text().trim();
+			var materialTd = row.find('td:eq(2)').text().trim();
+			var bibliotecarioTd = row.find('td:eq(3)').text().trim();
 			
 			console.log('Estado encontrado:', estadoTexto);
+			console.log('Fecha de solicitud encontrada:', fechaSolicitud);
 			console.log('Fecha de devolución encontrada:', fechaDevolucion);
 			
 			// Mapear el texto del estado a los valores del enum
@@ -880,9 +980,19 @@
 			// Llenar el modal con los datos del préstamo
 			$('#edit-id').val(id);
 			$('#edit-estado').val(estado);
+			$('#edit-info-id').text(id);
 			
-			// Convertir la fecha al formato correcto para el input date
-			if (fechaDevolucion && fechaDevolucion !== '') {
+			// Convertir la fecha de solicitud al formato correcto para el input date
+			if (fechaSolicitud && fechaSolicitud !== 'N/A' && fechaSolicitud !== '') {
+				var fechaSolicitudFormateada = convertirFechaParaInput(fechaSolicitud);
+				$('#edit-fechaSolicitud').val(fechaSolicitudFormateada);
+				console.log('Fecha de solicitud convertida:', fechaSolicitudFormateada);
+			} else {
+				$('#edit-fechaSolicitud').val('');
+			}
+			
+			// Convertir la fecha de devolución al formato correcto para el input date
+			if (fechaDevolucion && fechaDevolucion !== 'N/A' && fechaDevolucion !== '') {
 				var fechaFormateada = convertirFechaParaInput(fechaDevolucion);
 				$('#edit-fechaDevolucion').val(fechaFormateada);
 				console.log('Fecha convertida para input:', fechaFormateada);
@@ -890,20 +1000,53 @@
 				$('#edit-fechaDevolucion').val('');
 			}
 			
+			// Llenar información del material
+			// Extraer el ID del material desde la fila. Necesitamos buscar en la fila del HTML
+			// Primero intentar por el tipo de material (LIBRO o ARTICULO) y luego buscar el ID
+			var materialTexto = materialTd.split('\n')[0].trim();
+			console.log('Material encontrado:', materialTexto);
+			
+			// Llenar información de lector (extraer email del texto)
+			// El formato es: "Nombre (email)"
+			var lectorTexto = lectorTd.split('\n')[0].trim();
+			$('#edit-lector').val(function() {
+				var emailMatch = lectorTexto.match(/\(([^)]+)\)/);
+				return emailMatch ? emailMatch[1] : '';
+			});
+			
+			// Llenar información de bibliotecario (extraer número de empleado)
+			// El formato es: "Nombre (numero)"
+			var biblTexto = bibliotecarioTd.split('\n')[0].trim();
+			$('#edit-bibliotecario').val(function() {
+				var numMatch = biblTexto.match(/\(([^)]+)\)/);
+				return numMatch ? numMatch[1] : '';
+			});
+			
+			// Mostrar información del préstamo (datos actuales de solo lectura)
+			$('#edit-info-prestamo').html(
+				'<strong>Lector actual:</strong> ' + lectorTd.split('\n')[0] + '<br>' +
+				'<strong>Material actual:</strong> ' + materialTd.split('\n')[0] + '<br>' +
+				'<strong>Bibliotecario actual:</strong> ' + bibliotecarioTd.split('\n')[0]
+			);
+			
 			console.log('ID asignado al campo oculto:', $('#edit-id').val());
 			console.log('Estado asignado al select:', $('#edit-estado').val());
-			console.log('Fecha asignada al input:', $('#edit-fechaDevolucion').val());
+			console.log('Lector seleccionado:', $('#edit-lector').val());
+			console.log('Bibliotecario seleccionado:', $('#edit-bibliotecario').val());
+			console.log('Fecha solicitud asignada:', $('#edit-fechaSolicitud').val());
+			console.log('Fecha devolución asignada:', $('#edit-fechaDevolucion').val());
 			
-			// Mostrar información del préstamo
-			var lector = row.find('td:eq(1)').text();
-			var material = row.find('td:eq(2)').text();
-			var bibliotecario = row.find('td:eq(3)').text();
-			
-			$('#edit-info-prestamo').html(
-				'<strong>Lector:</strong> ' + lector + '<br>' +
-				'<strong>Material:</strong> ' + material + '<br>' +
-				'<strong>Bibliotecario:</strong> ' + bibliotecario
-			);
+			// Intentar seleccionar el material basándose en el texto
+			// El material se muestra como un texto descriptivo, necesitamos buscar en las opciones del select
+			// La mejor forma es buscar por el texto que contiene
+			var materialSelect = $('#edit-material');
+			materialSelect.find('option').each(function() {
+				if ($(this).text().includes(materialTexto.split('(')[0].trim())) {
+					materialSelect.val($(this).val());
+					console.log('Material seleccionado:', $(this).val());
+					return false; // salir del loop
+				}
+			});
 			
 			// Mostrar el modal
 			$('#editarPrestamoModal').modal('show');
@@ -918,18 +1061,47 @@
 			// Obtener datos directamente de los campos
 			var idPrestamo = $('#edit-id').val();
 			var estado = $('#edit-estado').val();
+			var emailLector = $('#edit-lector').val();
+			var numeroBibliotecario = $('#edit-bibliotecario').val();
 			var fechaDevolucion = $('#edit-fechaDevolucion').val();
+			var fechaSolicitud = $('#edit-fechaSolicitud').val();
+			var idMaterialRaw = $('#edit-material').val();
+			
+			// Extraer el ID del material del formato "TIPO_ID"
+			var idMaterial = '';
+			var tipoMaterial = '';
+			if (idMaterialRaw && idMaterialRaw !== '') {
+				if (idMaterialRaw.startsWith('LIBRO_')) {
+					tipoMaterial = 'LIBRO';
+					idMaterial = idMaterialRaw.replace('LIBRO_', '');
+				} else if (idMaterialRaw.startsWith('ARTICULO_')) {
+					tipoMaterial = 'ARTICULO';
+					idMaterial = idMaterialRaw.replace('ARTICULO_', '');
+				} else {
+					idMaterial = idMaterialRaw;
+				}
+			}
 			
 			console.log('Datos obtenidos:');
 			console.log('- ID Préstamo:', idPrestamo);
 			console.log('- Estado:', estado);
+			console.log('- Lector:', emailLector);
+			console.log('- Bibliotecario:', numeroBibliotecario);
 			console.log('- Fecha Devolución:', fechaDevolucion);
+			console.log('- Fecha Solicitud:', fechaSolicitud);
+			console.log('- Tipo Material:', tipoMaterial);
+			console.log('- ID Material:', idMaterial);
 			
 			// Crear objeto JSON
 			var datos = {
 				id_prestamo: idPrestamo,
 				estado: estado,
-				fechaDevolucion: fechaDevolucion
+				emailLector: emailLector,
+				numeroBibliotecario: numeroBibliotecario,
+				fechaDevolucion: fechaDevolucion,
+				fechaSolicitud: fechaSolicitud,
+				tipoMaterial: tipoMaterial,
+				idMaterial: idMaterial
 			};
 			
 			console.log('Datos JSON:', JSON.stringify(datos));
@@ -1034,10 +1206,33 @@
 			var id = $('#edit-id').val();
 			var estado = $('#edit-estado').val();
 			var fechaDevolucion = $('#edit-fechaDevolucion').val();
+			var fechaSolicitud = $('#edit-fechaSolicitud').val();
+			var lectorTexto = $('#edit-lector option:selected').text();
+			var bibliotecarioTexto = $('#edit-bibliotecario option:selected').text();
+			var materialTexto = $('#edit-material option:selected').text();
 			
 			// Buscar la fila en la tabla
 			var fila = $('tr[data-id="' + id + '"]');
 			if (fila.length > 0) {
+				// Actualizar lector
+				fila.find('td:eq(1)').html(lectorTexto);
+				
+				// Actualizar material
+				fila.find('td:eq(2)').html(materialTexto);
+				
+				// Actualizar bibliotecario
+				fila.find('td:eq(3)').html(bibliotecarioTexto);
+				
+				// Actualizar fecha solicitud
+				if (fechaSolicitud) {
+					fila.find('td:eq(4)').text(formatearFecha(fechaSolicitud));
+				}
+				
+				// Actualizar fecha de devolución
+				if (fechaDevolucion) {
+					fila.find('td:eq(5)').text(formatearFecha(fechaDevolucion));
+				}
+				
 				// Actualizar la columna de estado
 				var estadoColumna = fila.find('td:eq(6)'); // Columna de estado
 				var estadoBadge = '';
@@ -1134,7 +1329,6 @@
 		
 		// Cargar libros desde el servidor
 		<%
-			DtLibro[] libros = (DtLibro[]) request.getAttribute("libros");
 			if (libros != null && libros.length > 0) {
 				for (DtLibro libro : libros) {
 					String titulo = libro.getTitulo() != null ? libro.getTitulo() : "Sin título";
@@ -1150,7 +1344,6 @@
 		
 		// Cargar artículos desde el servidor
 		<%
-			DtArticulo[] articulos = (DtArticulo[]) request.getAttribute("articulos");
 			if (articulos != null && articulos.length > 0) {
 				for (DtArticulo articulo : articulos) {
 					String descripcion = articulo.getDescripcion() != null ? articulo.getDescripcion() : "Sin descripción";

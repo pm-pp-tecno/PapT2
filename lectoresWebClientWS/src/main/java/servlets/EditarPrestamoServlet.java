@@ -47,7 +47,12 @@ public class EditarPrestamoServlet extends HttpServlet {
         // Parsear JSON simple (sin librerías externas)
         String idStr = null;
         String estado = null;
+        String emailLector = null;
+        String numeroBibliotecario = null;
+        String fechaSolicitudStr = null;
         String fechaDevolucionStr = null;
+        String tipoMaterial = null;
+        String idMaterialStr = null;
         
         if (jsonData.contains("\"id_prestamo\"")) {
             idStr = extraerValorJSON(jsonData, "id_prestamo");
@@ -55,14 +60,34 @@ public class EditarPrestamoServlet extends HttpServlet {
         if (jsonData.contains("\"estado\"")) {
             estado = extraerValorJSON(jsonData, "estado");
         }
+        if (jsonData.contains("\"emailLector\"")) {
+            emailLector = extraerValorJSON(jsonData, "emailLector");
+        }
+        if (jsonData.contains("\"numeroBibliotecario\"")) {
+            numeroBibliotecario = extraerValorJSON(jsonData, "numeroBibliotecario");
+        }
+        if (jsonData.contains("\"fechaSolicitud\"")) {
+            fechaSolicitudStr = extraerValorJSON(jsonData, "fechaSolicitud");
+        }
         if (jsonData.contains("\"fechaDevolucion\"")) {
             fechaDevolucionStr = extraerValorJSON(jsonData, "fechaDevolucion");
+        }
+        if (jsonData.contains("\"tipoMaterial\"")) {
+            tipoMaterial = extraerValorJSON(jsonData, "tipoMaterial");
+        }
+        if (jsonData.contains("\"idMaterial\"")) {
+            idMaterialStr = extraerValorJSON(jsonData, "idMaterial");
         }
         
         System.out.println("Parámetros recibidos:");
         System.out.println("- ID: '" + idStr + "' (null? " + (idStr == null) + ")");
         System.out.println("- Estado: '" + estado + "' (null? " + (estado == null) + ")");
+        System.out.println("- Email Lector: '" + emailLector + "' (null? " + (emailLector == null) + ")");
+        System.out.println("- Número Bibliotecario: '" + numeroBibliotecario + "' (null? " + (numeroBibliotecario == null) + ")");
+        System.out.println("- Fecha Solicitud: '" + fechaSolicitudStr + "' (null? " + (fechaSolicitudStr == null) + ")");
         System.out.println("- Fecha Devolución: '" + fechaDevolucionStr + "' (null? " + (fechaDevolucionStr == null) + ")");
+        System.out.println("- Tipo Material: '" + tipoMaterial + "' (null? " + (tipoMaterial == null) + ")");
+        System.out.println("- ID Material: '" + idMaterialStr + "' (null? " + (idMaterialStr == null) + ")");
         
         System.out.println("Iniciando validaciones...");
         
@@ -172,16 +197,19 @@ public class EditarPrestamoServlet extends HttpServlet {
                                 publicadores.DtPrestamoArray prestamosArray = controlador.listarPrestamos();
                                 System.out.println("Conexión exitosa. Préstamos encontrados: " + prestamosArray.getItem().size());
                                 
-                                // Actualizar préstamo según si hay fecha o no
-                                if (fechaDevolucion != null) {
-                                    System.out.println("Llamando a actualizarPrestamo con ID: " + id + ", Estado: " + estado + ", Fecha: " + fechaDevolucionStr);
-                                    controlador.actualizarPrestamo(id.longValue(), estado, fechaDevolucionStr);
-                                    message = "Préstamo actualizado: estado=" + estado + ", fecha devolución=" + fechaDevolucionStr;
-                                } else {
-                                    System.out.println("Llamando a actualizarEstadoPrestamo con ID: " + id + ", Estado: " + estado);
-                                    controlador.actualizarEstadoPrestamo(id.longValue(), estado);
-                                    message = "Estado del préstamo actualizado a: " + estado;
-                                }
+                                // Actualizar préstamo con todos los campos
+                                System.out.println("Llamando a actualizarInformacionPrestamo con todos los parámetros");
+                                controlador.actualizarInformacionPrestamo(
+                                    id.longValue(),
+                                    estado,
+                                    emailLector,
+                                    numeroBibliotecario,
+                                    tipoMaterial,
+                                    idMaterialStr,
+                                    fechaSolicitudStr,
+                                    fechaDevolucionStr
+                                );
+                                message = "Préstamo actualizado correctamente";
                                 System.out.println("Llamada al servicio web completada");
                                 
                                 success = true;

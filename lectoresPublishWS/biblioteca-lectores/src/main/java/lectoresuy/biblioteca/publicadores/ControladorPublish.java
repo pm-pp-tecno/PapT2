@@ -353,6 +353,98 @@ public class ControladorPublish {
 		}
 	}
 
+	@WebMethod
+	public void actualizarInformacionPrestamo(long id, String estado, String emailLector, String numeroBibliotecario, String tipoMaterial, String idMaterial, String fechaSolicitud, String fechaDevolucion) {
+		try {
+			System.out.println("=== ControladorPublish.actualizarInformacionPrestamo ===");
+			System.out.println("ID: " + id);
+			System.out.println("Estado: " + estado);
+			System.out.println("Email Lector: " + emailLector);
+			System.out.println("Numero Bibliotecario: " + numeroBibliotecario);
+			System.out.println("Tipo Material: " + tipoMaterial);
+			System.out.println("ID Material: " + idMaterial);
+			System.out.println("Fecha Solicitud: " + fechaSolicitud);
+			System.out.println("Fecha Devolución: " + fechaDevolucion);
+			
+			// Obtener el préstamo actual usando el DAO
+			lectoresuy.biblioteca.dao.PrestamoDAO pDAO = new lectoresuy.biblioteca.dao.PrestamoDAO();
+			lectoresuy.biblioteca.entidades.Prestamo prestamo = pDAO.encontrarPorId(Long.valueOf(id));
+			if (prestamo == null) {
+				throw new WebServiceException("No se encontró el préstamo con ID: " + id);
+			}
+			
+			// Actualizar estado
+			if (estado != null && !estado.trim().isEmpty()) {
+				prestamo.setEstado(lectoresuy.biblioteca.entidades.Prestamo.EstadoPrestamo.valueOf(estado));
+			}
+			
+			// Convertir fechas
+			Date fechaSolicitudDate = null;
+			if (fechaSolicitud != null && !fechaSolicitud.trim().isEmpty()) {
+				String[] partes = fechaSolicitud.split("-");
+				if (partes.length == 3) {
+					java.util.Calendar cal = java.util.Calendar.getInstance();
+					cal.set(Integer.parseInt(partes[0]), Integer.parseInt(partes[1]) - 1, Integer.parseInt(partes[2]), 0, 0, 0);
+					cal.set(java.util.Calendar.MILLISECOND, 0);
+					fechaSolicitudDate = cal.getTime();
+					prestamo.setFechaSolicitud(fechaSolicitudDate);
+				}
+			}
+			
+			Date fechaDevolucionDate = null;
+			if (fechaDevolucion != null && !fechaDevolucion.trim().isEmpty()) {
+				String[] partes = fechaDevolucion.split("-");
+				if (partes.length == 3) {
+					java.util.Calendar cal = java.util.Calendar.getInstance();
+					cal.set(Integer.parseInt(partes[0]), Integer.parseInt(partes[1]) - 1, Integer.parseInt(partes[2]), 0, 0, 0);
+					cal.set(java.util.Calendar.MILLISECOND, 0);
+					fechaDevolucionDate = cal.getTime();
+					prestamo.setFechaDevolucionEstimada(fechaDevolucionDate);
+				}
+			}
+			
+			// Actualizar lector
+			if (emailLector != null && !emailLector.trim().isEmpty()) {
+				lectoresuy.biblioteca.dao.LectorDAO lDAO = new lectoresuy.biblioteca.dao.LectorDAO();
+				lectoresuy.biblioteca.entidades.Lector lector = lDAO.buscarPorEmail(emailLector);
+				if (lector != null) {
+					prestamo.setLector(lector);
+				}
+			}
+			
+			// Actualizar bibliotecario
+			if (numeroBibliotecario != null && !numeroBibliotecario.trim().isEmpty()) {
+				lectoresuy.biblioteca.dao.BibliotecarioDAO bDAO = new lectoresuy.biblioteca.dao.BibliotecarioDAO();
+				lectoresuy.biblioteca.entidades.Bibliotecario bibliotecario = bDAO.encontrarPorNumeroEmpleado(numeroBibliotecario);
+				if (bibliotecario != null) {
+					prestamo.setBibliotecario(bibliotecario);
+				}
+			}
+			
+			// Actualizar material
+			if (tipoMaterial != null && !tipoMaterial.trim().isEmpty() && idMaterial != null && !idMaterial.trim().isEmpty()) {
+				long idMaterialLong = Long.parseLong(idMaterial);
+				lectoresuy.biblioteca.dao.MaterialDAO mDAO = new lectoresuy.biblioteca.dao.MaterialDAO();
+				lectoresuy.biblioteca.entidades.Material material = mDAO.encontrarPorId(idMaterialLong);
+				if (material != null && 
+				    (("LIBRO".equals(tipoMaterial) && material instanceof lectoresuy.biblioteca.entidades.Libro) || 
+				     ("ARTICULO".equals(tipoMaterial) && material instanceof lectoresuy.biblioteca.entidades.Articulo))) {
+					prestamo.setMaterial(material);
+				}
+			}
+			
+			// Guardar cambios
+			pDAO.actualizar(prestamo);
+			
+			System.out.println("Préstamo actualizado exitosamente");
+			System.out.println("=== FIN ControladorPublish.actualizarInformacionPrestamo ===");
+		} catch (Exception ex) {
+			System.out.println("ERROR en actualizarInformacionPrestamo: " + ex.getMessage());
+			ex.printStackTrace();
+			throw new WebServiceException("Error al actualizar información del préstamo: " + ex.getMessage(), ex);
+		}
+	}
+
 
 	/*
 	 * Cambiar por actualizarEstadoPrestamo????
