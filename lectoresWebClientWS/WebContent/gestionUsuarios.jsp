@@ -226,6 +226,12 @@
 													   data-zona='<%= lector.getZona() != null ? lector.getZona().replace("\"","&quot;") : "" %>'>
 													   Editar
 													</a>
+													<button type="button" 
+															class="btn btn-sm btn-info prestamos-btn"
+															data-email='<%= lector.getEmail() %>'
+															data-nombre='<%= lector.getNombre() != null ? lector.getNombre().replace("\"","&quot;") : "" %>'>
+														Préstamos
+													</button>
 												</td>
 											</tr>
 										<% } %>
@@ -240,6 +246,29 @@
 				</div>
 			</div>
 		</div>
+	</div>
+
+	<!-- Modal de Préstamos -->
+	<div class="modal fade" id="prestamosModal" tabindex="-1" role="dialog" aria-labelledby="prestamosModalLabel" aria-hidden="true">
+	  <div class="modal-dialog modal-lg" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="prestamosModalLabel">Préstamos del Lector</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	        <p id="lector-info-prestamos"></p>
+	        <div id="prestamos-lista">
+	          <p class="text-muted">Cargando préstamos...</p>
+	        </div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+	      </div>
+	    </div>
+	  </div>
 	</div>
 
 	<!-- Edit modal -->
@@ -431,6 +460,61 @@
 			location.reload();
 		}, 2000);
 	}
+	
+	// Manejar clic en botón de préstamos
+	$(document).on('click', '.prestamos-btn', function() {
+		var email = $(this).data('email');
+		var nombre = $(this).data('nombre');
+		
+		$('#lector-info-prestamos').html('<strong>Préstamos de: ' + nombre + ' (' + email + ')</strong>');
+		$('#prestamos-lista').html('<p class="text-muted">Cargando préstamos...</p>');
+		
+		$('#prestamosModal').modal('show');
+		
+		// Cargar préstamos del lector usando fetch
+		fetch('prestamosLector?email=' + encodeURIComponent(email))
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(data) {
+				var prestamos = data.prestamos || [];
+				if (prestamos.length === 0) {
+					$('#prestamos-lista').html('<p class="alert alert-info">No hay préstamos activos para este lector.</p>');
+				} else {
+					var html = '<table class="table table-sm table-striped"><thead class="thead-dark">';
+					html += '<tr><th>ID</th><th>Material</th><th>Fecha Solicitud</th><th>Estado</th></tr></thead><tbody>';
+					
+					for (var i = 0; i < prestamos.length; i++) {
+						var p = prestamos[i];
+						var estadoBadge = '';
+						if (p.estado === 'PENDIENTE') {
+							estadoBadge = '<span class="badge badge-warning">Pendiente</span>';
+						} else if (p.estado === 'EN_CURSO') {
+							estadoBadge = '<span class="badge badge-primary">En Curso</span>';
+						} else if (p.estado === 'DEVUELTO') {
+							estadoBadge = '<span class="badge badge-success">Devuelto</span>';
+						} else {
+							estadoBadge = '<span class="badge badge-secondary">' + p.estado + '</span>';
+						}
+						
+						html += '<tr>';
+						html += '<td>' + p.id + '</td>';
+						html += '<td>' + (p.materialTitulo || 'N/A') + '</td>';
+						html += '<td>' + (p.fechaSolicitud || 'N/A') + '</td>';
+						html += '<td>' + estadoBadge + '</td>';
+						html += '</tr>';
+					}
+					
+					html += '</tbody></table>';
+					$('#prestamos-lista').html(html);
+				}
+			})
+			.catch(function(error) {
+				console.error('Error al cargar préstamos:', error);
+				$('#prestamos-lista').html('<p class="alert alert-danger">Error al cargar los préstamos.</p>');
+			});
+	});
+
 	</script>
 </body>
 </html>
