@@ -176,7 +176,23 @@
 					<% if ("LECTOR".equals(tipoUsuario)) { %>
 						<h5 class="mb-0">Mis Préstamos</h5>
 						<div>
-							<button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#agregarPrestamoModal">
+							<%
+								// Obtener el estado del lector desde la base de datos
+								String emailLector = (String) session.getAttribute("email");
+								boolean lectorSuspendido = false;
+								if (lectores != null && emailLector != null) {
+									for (DtLector lector : lectores) {
+										if (lector.getEmail().equals(emailLector)) {
+											lectorSuspendido = (lector.getEstado() != null && 
+												lector.getEstado().toString().equals("SUSPENDIDO"));
+											break;
+										}
+									}
+								}
+							%>
+							<button type="button" 
+							        class="btn btn-success btn-sm solicitar-prestamo-btn" 
+							        data-suspendido="<%= lectorSuspendido %>">
 								<i class="fas fa-plus"></i> Solicitar Préstamo
 							</button>
 						</div>
@@ -878,6 +894,30 @@
 		crossorigin="anonymous"></script>
 
 	<script>
+		// Validar antes de abrir modal de solicitar préstamo para lectores
+		$(document).on('click', '.solicitar-prestamo-btn', function(e) {
+			e.preventDefault();
+			var suspendido = $(this).data('suspendido') === 'true' || $(this).data('suspendido') === true;
+			if (suspendido) {
+				// Mostrar mensaje de error
+				var errorDiv = $('<div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: 90%; min-width: 300px;">' +
+					'<strong><i class="fas fa-exclamation-triangle"></i> Error!</strong><br>' +
+					'<p class="mb-0">Tu cuenta se encuentra <strong>SUSPENDIDA</strong>. No puedes solicitar nuevos préstamos hasta que tu cuenta sea reactivada.</p>' +
+					'<br><button type="button" class="btn btn-sm btn-danger" onclick="$(this).closest(\'.alert\').alert(\'close\')">Entendido</button>' +
+					'</div>');
+				
+				$('body').append(errorDiv);
+				
+				// Auto-ocultar después de 8 segundos
+				setTimeout(function() {
+					errorDiv.alert('close');
+				}, 8000);
+			} else {
+				// Si no está suspendido, abrir el modal manualmente
+				$('#agregarPrestamoModal').modal('show');
+			}
+		});
+
 		// Manejar formulario de agregar préstamo
 		$('#agregarPrestamoForm').on('submit', function(e) {
 			e.preventDefault();

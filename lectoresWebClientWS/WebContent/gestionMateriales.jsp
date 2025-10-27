@@ -953,6 +953,17 @@
 				if (tbody.length > 0) {
 					tbody.html(htmlContent);
 					console.log('Contenido del tbody después de insertar:', tbody.html());
+					
+					// Actualizar todosLosMateriales con los nuevos datos
+					todosLosMateriales = materiales;
+					
+					// Re-aplicar filtros de fecha si hay alguno activo
+					var fechaDesde = $('#fechaDesde').val();
+					var fechaHasta = $('#fechaHasta').val();
+					if (fechaDesde || fechaHasta) {
+						console.log('Re-aplicando filtros de fecha:', fechaDesde, '-', fechaHasta);
+						aplicarFiltro(); // Re-aplicar el filtro con los nuevos materiales
+					}
 				} else {
 					console.error('No se puede insertar HTML: elemento tbody no encontrado');
 				}

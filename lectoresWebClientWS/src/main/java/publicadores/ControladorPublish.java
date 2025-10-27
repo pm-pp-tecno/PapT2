@@ -27,171 +27,22 @@ public interface ControladorPublish {
 
     /**
      * 
-     * @param arg0
-     * @return
-     *     returns boolean
-     */
-    @WebMethod
-    @WebResult(partName = "return")
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/materialEstaDisponibleRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/materialEstaDisponibleResponse")
-    public boolean materialEstaDisponible(
-        @WebParam(name = "arg0", partName = "arg0")
-        long arg0);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns java.lang.String
-     */
-    @WebMethod
-    @WebResult(partName = "return")
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/autenticarUsuarioRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/autenticarUsuarioResponse")
-    public String autenticarUsuario(
-        @WebParam(name = "arg0", partName = "arg0")
-        String arg0,
-        @WebParam(name = "arg1", partName = "arg1")
-        String arg1);
-
-    /**
-     * 
-     * @return
-     *     returns publicadores.DtBibliotecarioArray
-     */
-    @WebMethod
-    @WebResult(partName = "return")
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarBibliotecariosParaSelectRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarBibliotecariosParaSelectResponse")
-    public DtBibliotecarioArray listarBibliotecariosParaSelect();
-
-    /**
-     * 
-     * @param arg2
-     * @param arg1
-     * @param arg0
-     */
-    @WebMethod
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarPrestamoRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarPrestamoResponse")
-    public void actualizarPrestamo(
-        @WebParam(name = "arg0", partName = "arg0")
-        long arg0,
-        @WebParam(name = "arg1", partName = "arg1")
-        String arg1,
-        @WebParam(name = "arg2", partName = "arg2")
-        String arg2);
-
-    /**
-     * 
-     * @param arg0
-     * @return
-     *     returns boolean
-     */
-    @WebMethod
-    @WebResult(partName = "return")
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/lectorEstaSuspendidoRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/lectorEstaSuspendidoResponse")
-    public boolean lectorEstaSuspendido(
-        @WebParam(name = "arg0", partName = "arg0")
-        String arg0);
-
-    /**
-     * 
-     * @param arg3
-     * @param arg2
-     * @param arg4
-     * @param arg1
-     * @param arg0
-     */
-    @WebMethod
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarArticuloConFechaRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarArticuloConFechaResponse")
-    public void actualizarArticuloConFecha(
-        @WebParam(name = "arg0", partName = "arg0")
-        long arg0,
-        @WebParam(name = "arg1", partName = "arg1")
-        String arg1,
-        @WebParam(name = "arg2", partName = "arg2")
-        double arg2,
-        @WebParam(name = "arg3", partName = "arg3")
-        String arg3,
-        @WebParam(name = "arg4", partName = "arg4")
-        String arg4);
-
-    /**
-     * 
-     * @return
-     *     returns publicadores.DtArticuloArray
-     */
-    @WebMethod
-    @WebResult(partName = "return")
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarArticulosParaSelectRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarArticulosParaSelectResponse")
-    public DtArticuloArray listarArticulosParaSelect();
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns publicadores.DtMaterialArray
-     */
-    @WebMethod
-    @WebResult(partName = "return")
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/filtrarMaterialesPorFechaRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/filtrarMaterialesPorFechaResponse")
-    public DtMaterialArray filtrarMaterialesPorFecha(
-        @WebParam(name = "arg0", partName = "arg0")
-        String arg0,
-        @WebParam(name = "arg1", partName = "arg1")
-        String arg1);
-
-    /**
-     * 
      * @param arg3
      * @param arg2
      * @param arg1
      * @param arg0
      */
     @WebMethod
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/registrarPrestamoRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/registrarPrestamoResponse")
-    public void registrarPrestamo(
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/agregarBibliotecarioRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/agregarBibliotecarioResponse")
+    public void agregarBibliotecario(
         @WebParam(name = "arg0", partName = "arg0")
-        long arg0,
+        String arg0,
         @WebParam(name = "arg1", partName = "arg1")
         String arg1,
         @WebParam(name = "arg2", partName = "arg2")
         String arg2,
         @WebParam(name = "arg3", partName = "arg3")
         String arg3);
-
-    /**
-     * 
-     * @return
-     *     returns publicadores.DtLibroArray
-     */
-    @WebMethod
-    @WebResult(partName = "return")
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarLibrosParaSelectRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarLibrosParaSelectResponse")
-    public DtLibroArray listarLibrosParaSelect();
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     */
-    @WebMethod
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarFechaMaterialRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarFechaMaterialResponse")
-    public void actualizarFechaMaterial(
-        @WebParam(name = "arg0", partName = "arg0")
-        long arg0,
-        @WebParam(name = "arg1", partName = "arg1")
-        String arg1);
-
-    /**
-     * 
-     * @return
-     *     returns publicadores.DtLectorArray
-     */
-    @WebMethod
-    @WebResult(partName = "return")
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarLectoresParaSelectRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarLectoresParaSelectResponse")
-    public DtLectorArray listarLectoresParaSelect();
 
     /**
      * 
@@ -231,6 +82,22 @@ public interface ControladorPublish {
 
     /**
      * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     */
+    @WebMethod
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/agregarLibroRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/agregarLibroResponse")
+    public void agregarLibro(
+        @WebParam(name = "arg0", partName = "arg0")
+        String arg0,
+        @WebParam(name = "arg1", partName = "arg1")
+        int arg1,
+        @WebParam(name = "arg2", partName = "arg2")
+        String arg2);
+
+    /**
+     * 
      * @param arg3
      * @param arg2
      * @param arg1
@@ -247,22 +114,6 @@ public interface ControladorPublish {
         String arg2,
         @WebParam(name = "arg3", partName = "arg3")
         String arg3);
-
-    /**
-     * 
-     * @param arg2
-     * @param arg1
-     * @param arg0
-     */
-    @WebMethod
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/agregarLibroRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/agregarLibroResponse")
-    public void agregarLibro(
-        @WebParam(name = "arg0", partName = "arg0")
-        String arg0,
-        @WebParam(name = "arg1", partName = "arg1")
-        int arg1,
-        @WebParam(name = "arg2", partName = "arg2")
-        String arg2);
 
     /**
      * 
@@ -294,22 +145,219 @@ public interface ControladorPublish {
 
     /**
      * 
+     * @return
+     *     returns publicadores.DtMaterialArray
+     */
+    @WebMethod
+    @WebResult(partName = "return")
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarMaterialesRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarMaterialesResponse")
+    public DtMaterialArray listarMateriales();
+
+    /**
+     * 
+     * @param arg3
+     * @param arg2
+     * @param arg4
+     * @param arg1
+     * @param arg0
+     */
+    @WebMethod
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarArticuloConFechaRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarArticuloConFechaResponse")
+    public void actualizarArticuloConFecha(
+        @WebParam(name = "arg0", partName = "arg0")
+        long arg0,
+        @WebParam(name = "arg1", partName = "arg1")
+        String arg1,
+        @WebParam(name = "arg2", partName = "arg2")
+        double arg2,
+        @WebParam(name = "arg3", partName = "arg3")
+        String arg3,
+        @WebParam(name = "arg4", partName = "arg4")
+        String arg4);
+
+    /**
+     * 
      * @param arg3
      * @param arg2
      * @param arg1
      * @param arg0
      */
     @WebMethod
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/agregarBibliotecarioRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/agregarBibliotecarioResponse")
-    public void agregarBibliotecario(
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarArticuloRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarArticuloResponse")
+    public void actualizarArticulo(
+        @WebParam(name = "arg0", partName = "arg0")
+        long arg0,
+        @WebParam(name = "arg1", partName = "arg1")
+        String arg1,
+        @WebParam(name = "arg2", partName = "arg2")
+        double arg2,
+        @WebParam(name = "arg3", partName = "arg3")
+        String arg3);
+
+    /**
+     * 
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     */
+    @WebMethod
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarPrestamoRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarPrestamoResponse")
+    public void actualizarPrestamo(
+        @WebParam(name = "arg0", partName = "arg0")
+        long arg0,
+        @WebParam(name = "arg1", partName = "arg1")
+        String arg1,
+        @WebParam(name = "arg2", partName = "arg2")
+        String arg2);
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns boolean
+     */
+    @WebMethod
+    @WebResult(partName = "return")
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/lectorEstaSuspendidoRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/lectorEstaSuspendidoResponse")
+    public boolean lectorEstaSuspendido(
+        @WebParam(name = "arg0", partName = "arg0")
+        String arg0);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns java.lang.String
+     */
+    @WebMethod
+    @WebResult(partName = "return")
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/autenticarUsuarioRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/autenticarUsuarioResponse")
+    public String autenticarUsuario(
         @WebParam(name = "arg0", partName = "arg0")
         String arg0,
+        @WebParam(name = "arg1", partName = "arg1")
+        String arg1);
+
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns boolean
+     */
+    @WebMethod
+    @WebResult(partName = "return")
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/materialEstaDisponibleRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/materialEstaDisponibleResponse")
+    public boolean materialEstaDisponible(
+        @WebParam(name = "arg0", partName = "arg0")
+        long arg0);
+
+    /**
+     * 
+     * @return
+     *     returns publicadores.DtArticuloArray
+     */
+    @WebMethod
+    @WebResult(partName = "return")
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarArticulosParaSelectRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarArticulosParaSelectResponse")
+    public DtArticuloArray listarArticulosParaSelect();
+
+    /**
+     * 
+     * @return
+     *     returns publicadores.DtBibliotecarioArray
+     */
+    @WebMethod
+    @WebResult(partName = "return")
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarBibliotecariosParaSelectRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarBibliotecariosParaSelectResponse")
+    public DtBibliotecarioArray listarBibliotecariosParaSelect();
+
+    /**
+     * 
+     * @param arg3
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     */
+    @WebMethod
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/registrarPrestamoRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/registrarPrestamoResponse")
+    public void registrarPrestamo(
+        @WebParam(name = "arg0", partName = "arg0")
+        long arg0,
         @WebParam(name = "arg1", partName = "arg1")
         String arg1,
         @WebParam(name = "arg2", partName = "arg2")
         String arg2,
         @WebParam(name = "arg3", partName = "arg3")
         String arg3);
+
+    /**
+     * 
+     * @param arg3
+     * @param arg2
+     * @param arg1
+     * @param arg0
+     */
+    @WebMethod
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarLibroConFechaRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarLibroConFechaResponse")
+    public void actualizarLibroConFecha(
+        @WebParam(name = "arg0", partName = "arg0")
+        long arg0,
+        @WebParam(name = "arg1", partName = "arg1")
+        String arg1,
+        @WebParam(name = "arg2", partName = "arg2")
+        int arg2,
+        @WebParam(name = "arg3", partName = "arg3")
+        String arg3);
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     */
+    @WebMethod
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarFechaMaterialRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarFechaMaterialResponse")
+    public void actualizarFechaMaterial(
+        @WebParam(name = "arg0", partName = "arg0")
+        long arg0,
+        @WebParam(name = "arg1", partName = "arg1")
+        String arg1);
+
+    /**
+     * 
+     * @return
+     *     returns publicadores.DtLibroArray
+     */
+    @WebMethod
+    @WebResult(partName = "return")
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarLibrosParaSelectRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarLibrosParaSelectResponse")
+    public DtLibroArray listarLibrosParaSelect();
+
+    /**
+     * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns publicadores.DtMaterialArray
+     */
+    @WebMethod
+    @WebResult(partName = "return")
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/filtrarMaterialesPorFechaRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/filtrarMaterialesPorFechaResponse")
+    public DtMaterialArray filtrarMaterialesPorFecha(
+        @WebParam(name = "arg0", partName = "arg0")
+        String arg0,
+        @WebParam(name = "arg1", partName = "arg1")
+        String arg1);
+
+    /**
+     * 
+     * @return
+     *     returns publicadores.DtLectorArray
+     */
+    @WebMethod
+    @WebResult(partName = "return")
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarLectoresParaSelectRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarLectoresParaSelectResponse")
+    public DtLectorArray listarLectoresParaSelect();
 
     /**
      * 
@@ -333,19 +381,6 @@ public interface ControladorPublish {
     @WebResult(partName = "return")
     @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarBibliotecariosRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarBibliotecariosResponse")
     public DtBibliotecarioArray listarBibliotecarios();
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     */
-    @WebMethod
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarEstadoPrestamoRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarEstadoPrestamoResponse")
-    public void actualizarEstadoPrestamo(
-        @WebParam(name = "arg0", partName = "arg0")
-        long arg0,
-        @WebParam(name = "arg1", partName = "arg1")
-        String arg1);
 
     /**
      * 
@@ -380,51 +415,16 @@ public interface ControladorPublish {
 
     /**
      * 
-     * @param arg3
-     * @param arg2
      * @param arg1
      * @param arg0
      */
     @WebMethod
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarArticuloRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarArticuloResponse")
-    public void actualizarArticulo(
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarEstadoPrestamoRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarEstadoPrestamoResponse")
+    public void actualizarEstadoPrestamo(
         @WebParam(name = "arg0", partName = "arg0")
         long arg0,
         @WebParam(name = "arg1", partName = "arg1")
-        String arg1,
-        @WebParam(name = "arg2", partName = "arg2")
-        double arg2,
-        @WebParam(name = "arg3", partName = "arg3")
-        String arg3);
-
-    /**
-     * 
-     * @param arg3
-     * @param arg2
-     * @param arg1
-     * @param arg0
-     */
-    @WebMethod
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarLibroConFechaRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/actualizarLibroConFechaResponse")
-    public void actualizarLibroConFecha(
-        @WebParam(name = "arg0", partName = "arg0")
-        long arg0,
-        @WebParam(name = "arg1", partName = "arg1")
-        String arg1,
-        @WebParam(name = "arg2", partName = "arg2")
-        int arg2,
-        @WebParam(name = "arg3", partName = "arg3")
-        String arg3);
-
-    /**
-     * 
-     * @return
-     *     returns publicadores.DtMaterialArray
-     */
-    @WebMethod
-    @WebResult(partName = "return")
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarMaterialesRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarMaterialesResponse")
-    public DtMaterialArray listarMateriales();
+        String arg1);
 
     /**
      * 
@@ -438,16 +438,6 @@ public interface ControladorPublish {
 
     /**
      * 
-     * @return
-     *     returns publicadores.DtPrestamoArray
-     */
-    @WebMethod
-    @WebResult(partName = "return")
-    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarPrestamosRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarPrestamosResponse")
-    public DtPrestamoArray listarPrestamos();
-
-    /**
-     * 
      * @param arg1
      * @param arg0
      */
@@ -458,5 +448,15 @@ public interface ControladorPublish {
         String arg0,
         @WebParam(name = "arg1", partName = "arg1")
         String arg1);
+
+    /**
+     * 
+     * @return
+     *     returns publicadores.DtPrestamoArray
+     */
+    @WebMethod
+    @WebResult(partName = "return")
+    @Action(input = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarPrestamosRequest", output = "http://publicadores.biblioteca.lectoresuy/ControladorPublish/listarPrestamosResponse")
+    public DtPrestamoArray listarPrestamos();
 
 }
