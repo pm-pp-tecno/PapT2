@@ -33,13 +33,60 @@
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
 	crossorigin="anonymous">
+<link rel="stylesheet" 
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+	integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+	crossorigin="anonymous">
+
+<style>
+	/* Estilos para el dropdown de reportes */
+	.nav-item.dropdown:hover .dropdown-menu {
+		display: block;
+		margin-top: 0;
+	}
+	
+	.dropdown-menu {
+		border: none;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		border-radius: 8px;
+		padding: 0.5rem 0;
+	}
+	
+	.dropdown-item {
+		padding: 0.75rem 1.5rem;
+		transition: background-color 0.2s ease;
+	}
+	
+	.dropdown-item:hover {
+		background-color: #f8f9fa;
+		color: #495057;
+	}
+	
+	.dropdown-item i {
+		margin-right: 0.5rem;
+		width: 16px;
+		text-align: center;
+	}
+	
+	/* Estilos para iconos del menú principal */
+	.nav-link i {
+		margin-right: 0.5rem;
+		width: 16px;
+		text-align: center;
+	}
+	
+	.nav-link:hover i {
+		transform: scale(1.1);
+		transition: transform 0.2s ease;
+	}
+</style>
 
 <title>Gestion Usuarios</title>
 </head>
 
 <body>
 	<nav class="navbar navbar-expand-lg navbar-light bg-light"> 
-		<a class="navbar-brand" href="index">Lectores UY</a>
+		<a class="navbar-brand" href="index"><i class="fas fa-book-open text-primary mr-2"></i> Lectores UY</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse"
 			data-target="#navbarSupportedContent"
 			aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -50,18 +97,37 @@
 			<ul class="navbar-nav mr-auto">
 				<% if ("BIBLIOTECARIO".equals(tipoUsuario)) { %>
 					<!-- Menú completo para BIBLIOTECARIOS -->
-					<li class="nav-item active">
-						<a class="nav-link" href="gestionUsuarios">Gestion Usuarios</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="gestionMateriales">Gestion Materiales</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="gestionPrestamos">Gestion Prestamos</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="consultas">Consultas</a>
-					</li>
+				<li class="nav-item active">
+					<a class="nav-link" href="gestionUsuarios">
+						<i class="fas fa-users"></i> Gestion Usuarios
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="gestionMateriales">
+						<i class="fas fa-book"></i> Gestion Materiales
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="gestionPrestamos">
+						<i class="fas fa-book-reader"></i> Gestion Prestamos
+					</a>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link" href="reportes" id="reportesDropdown" role="button">
+						<i class="fas fa-chart-bar"></i> Reportes
+					</a>
+					<div class="dropdown-menu" aria-labelledby="reportesDropdown">
+						<a class="dropdown-item" href="historialPrestamos">
+							<i class="fas fa-history"></i> Historial de Préstamos
+						</a>
+						<a class="dropdown-item" href="prestamosZona">
+							<i class="fas fa-map-marker-alt"></i> Préstamos por Zona
+						</a>
+						<a class="dropdown-item" href="prestamosPendientes">
+							<i class="fas fa-clock"></i> Préstamos Pendientes
+						</a>
+					</div>
+				</li>
 				<% } else { %>
 					<!-- Menú limitado para LECTORES -->
 					<li class="nav-item">

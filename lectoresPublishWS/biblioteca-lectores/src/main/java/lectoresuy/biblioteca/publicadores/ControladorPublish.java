@@ -428,10 +428,10 @@ public class ControladorPublish {
 			lectoresuy.biblioteca.service.ManejadorBibliotecario mB = lectoresuy.biblioteca.service.ManejadorBibliotecario.getInstancia();
 			lectoresuy.biblioteca.entidades.Bibliotecario bibliotecario = mB.buscarPorEmail(email);
 			
-			if (bibliotecario != null && bibliotecario.getPassword() != null && bibliotecario.getPassword().equals(password)) {
-				// Usuario autenticado como Bibliotecario
-				return "BIBLIOTECARIO:" + bibliotecario.getId() + ":" + bibliotecario.getNombre();
-			}
+		if (bibliotecario != null && bibliotecario.getPassword() != null && bibliotecario.getPassword().equals(password)) {
+			// Usuario autenticado como Bibliotecario
+			return "BIBLIOTECARIO:" + bibliotecario.getNumeroEmpleado() + ":" + bibliotecario.getNombre();
+		}
 			
 			// Credenciales inválidas
 			return "ERROR: Credenciales inválidas";

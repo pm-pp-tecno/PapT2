@@ -247,13 +247,6 @@
 								  .addClass(alertClass);
 				$('#mensajeTexto').html(icono + texto);
 				$('#mensajeContainer').show();
-				
-				// Auto-ocultar después de 5 segundos para mensajes de éxito
-				if (tipo === 'success') {
-					setTimeout(function() {
-						$('#mensajeContainer').fadeOut();
-					}, 5000);
-				}
 			}
 			
 			// Función para ocultar mensajes
@@ -275,6 +268,8 @@
 					var submitBtn = $(this).find('button[type="submit"]');
 					submitBtn.prop('disabled', true).text('Iniciando sesión...');
 					
+					var loginExitoso = false; // Variable para controlar el estado
+					
 					// Enviar datos al servlet
 					$.ajax({
 						url: 'loginProcess',
@@ -290,21 +285,10 @@
 							var response = typeof data === 'string' ? JSON.parse(data) : data;
 							
 							if (response.success) {
-								// Login exitoso
-								var tipoUsuario = response.userType;
-								var nombreUsuario = response.userName;
+								loginExitoso = true; // Marcar como exitoso
 								
-								// Mostrar mensaje de éxito con Bootstrap
-								var mensajeExito = '<strong>¡Bienvenido!</strong><br>';
-								mensajeExito += 'Usuario: ' + nombreUsuario + '<br>';
-								mensajeExito += 'Tipo: ' + (tipoUsuario === 'LECTOR' ? 'Lector' : 'Bibliotecario');
-								
-								mostrarMensaje(mensajeExito, 'success');
-								
-								// Redirigir a la página principal después de un breve delay
-								setTimeout(function() {
-									window.location.href = 'index';
-								}, 2000);
+								// Redirigir a index con parámetro de bienvenida
+								window.location.href = 'index?nuevoLogin=true';
 							} else {
 								// Error de login - mostrar mensaje claro
 								var mensaje = '<strong>Error de autenticación</strong><br>';
@@ -321,8 +305,10 @@
 							mostrarMensaje('<strong>Error de conexión</strong><br>Por favor, intente nuevamente más tarde.', 'error');
 						},
 						complete: function() {
-							// Rehabilitar el botón
-							submitBtn.prop('disabled', false).text('Iniciar Sesión');
+							// Solo rehabilitar el botón si NO fue exitoso
+							if (!loginExitoso) {
+								submitBtn.prop('disabled', false).text('Iniciar Sesión');
+							}
 						}
 					});
 				} else {

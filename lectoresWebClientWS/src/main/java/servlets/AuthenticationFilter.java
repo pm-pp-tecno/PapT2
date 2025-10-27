@@ -56,9 +56,9 @@ public class AuthenticationFilter implements Filter {
             // Páginas que solo pueden ver los BIBLIOTECARIOS
             boolean isGestionUsuarios = requestURI.endsWith("gestionUsuarios.jsp") || requestURI.endsWith("/gestionUsuarios");
             boolean isGestionMateriales = requestURI.endsWith("gestionMateriales.jsp") || requestURI.endsWith("/gestionMateriales");
-            boolean isConsultas = requestURI.endsWith("consultas.jsp") || requestURI.endsWith("/consultas");
+            boolean isReportes = requestURI.endsWith("reportes.jsp") || requestURI.endsWith("/reportes");
             
-            if ((isGestionUsuarios || isGestionMateriales || isConsultas) && !"BIBLIOTECARIO".equals(tipoUsuario)) {
+            if ((isGestionUsuarios || isGestionMateriales || isReportes) && !"BIBLIOTECARIO".equals(tipoUsuario)) {
                 System.out.println("Usuario " + tipoUsuario + " intentando acceder a página restringida: " + requestURI);
                 httpResponse.sendRedirect(httpRequest.getContextPath() + "/index");
                 return;

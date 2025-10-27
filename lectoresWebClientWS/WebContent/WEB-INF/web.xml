@@ -130,12 +130,39 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>ConsultasServlet</servlet-name>
-        <servlet-class>servlets.ConsultasServlet</servlet-class>
+        <servlet-name>ReportesServlet</servlet-name>
+        <servlet-class>servlets.ReportesServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ConsultasServlet</servlet-name>
-        <url-pattern>/consultas</url-pattern>
+        <servlet-name>ReportesServlet</servlet-name>
+        <url-pattern>/reportes</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>HistorialPrestamosServlet</servlet-name>
+        <servlet-class>servlets.HistorialPrestamosServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HistorialPrestamosServlet</servlet-name>
+        <url-pattern>/historialPrestamos</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>PrestamosZonaServlet</servlet-name>
+        <servlet-class>servlets.PrestamosZonaServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PrestamosZonaServlet</servlet-name>
+        <url-pattern>/prestamosZona</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>PrestamosPendientesServlet</servlet-name>
+        <servlet-class>servlets.PrestamosPendientesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PrestamosPendientesServlet</servlet-name>
+        <url-pattern>/prestamosPendientes</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -166,7 +193,10 @@
         <url-pattern>/agregarPrestamo</url-pattern>
         <url-pattern>/filtroMateriales</url-pattern>
         <url-pattern>/materialesData</url-pattern>
-        <url-pattern>/consultas</url-pattern>
+        <url-pattern>/reportes</url-pattern>
+        <url-pattern>/historialPrestamos</url-pattern>
+        <url-pattern>/prestamosZona</url-pattern>
+        <url-pattern>/prestamosPendientes</url-pattern>
     </filter-mapping>
 
     <!-- Session Configuration -->
