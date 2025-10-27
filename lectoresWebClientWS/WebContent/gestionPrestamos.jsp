@@ -166,18 +166,23 @@
 				<% } %>
 				
 				<div class="card">
-					<div class="card-header d-flex justify-content-between align-items-center">
-						<% if ("LECTOR".equals(tipoUsuario)) { %>
-							<h5 class="mb-0">Mis Préstamos</h5>
-						<% } else { %>
-							<h5 class="mb-0">Lista de Préstamos</h5>
-							<div>
-								<button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#agregarPrestamoModal">
-									<i class="fas fa-plus"></i> Nuevo Préstamo
-								</button>
-							</div>
-						<% } %>
-					</div>
+				<div class="card-header d-flex justify-content-between align-items-center">
+					<% if ("LECTOR".equals(tipoUsuario)) { %>
+						<h5 class="mb-0">Mis Préstamos</h5>
+						<div>
+							<button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#agregarPrestamoModal">
+								<i class="fas fa-plus"></i> Solicitar Préstamo
+							</button>
+						</div>
+					<% } else { %>
+						<h5 class="mb-0">Lista de Préstamos</h5>
+						<div>
+							<button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#agregarPrestamoModal">
+								<i class="fas fa-plus"></i> Nuevo Préstamo
+							</button>
+						</div>
+					<% } %>
+				</div>
 					<div class="card-body">
 						<% if ("LECTOR".equals(tipoUsuario)) { %>
 							<!-- Vista para LECTOR: Préstamos agrupados por estado -->
@@ -585,7 +590,13 @@
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="agregarPrestamoModalLabel">Nuevo Préstamo</h5>
+					<h5 class="modal-title" id="agregarPrestamoModalLabel">
+						<% if ("LECTOR".equals(tipoUsuario)) { %>
+							Solicitar Préstamo
+						<% } else { %>
+							Nuevo Préstamo
+						<% } %>
+					</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
@@ -619,24 +630,43 @@
 							<div class="col-md-6">
 								<div class="form-group">
 									<label for="agregar-lector">Lector *</label>
-									<select class="form-control" id="agregar-lector" name="emailLector" required>
-										<option value="">Seleccione un lector</option>
+									<% if ("LECTOR".equals(tipoUsuario)) { %>
 										<%
+											String emailLector = (String) session.getAttribute("email");
 											DtLector[] lectores = (DtLector[]) request.getAttribute("lectores");
+											String nombreCompleto = usuario;
 											if (lectores != null) {
 												for (DtLector lector : lectores) {
-													String nombreCompleto = lector.getNombre() + " (" + lector.getEmail() + ")";
-													boolean suspendido = lector.getNombre().contains("(SUSPENDIDO)");
-													String optionClass = suspendido ? "disabled" : "";
-													String optionStyle = suspendido ? "color: #999;" : "";
-										%>
-										<option value="<%= lector.getEmail() %>" class="<%= optionClass %>" style="<%= optionStyle %>" <%= suspendido ? "disabled" : "" %>><%= nombreCompleto %></option>
-										<%
+													if (lector.getEmail().equals(emailLector)) {
+														nombreCompleto = lector.getNombre() + " (" + lector.getEmail() + ")";
+														break;
+													}
 												}
 											}
 										%>
-									</select>
-									<small class="form-text text-muted">Seleccione el lector que solicita el préstamo</small>
+										<input type="text" class="form-control" value="<%= nombreCompleto %>" disabled>
+										<input type="hidden" id="agregar-lector" name="emailLector" value="<%= emailLector %>">
+										<small class="form-text text-muted">Solicitando préstamo como: <%= usuario %></small>
+									<% } else { %>
+										<select class="form-control" id="agregar-lector" name="emailLector" required>
+											<option value="">Seleccione un lector</option>
+											<%
+												DtLector[] lectores = (DtLector[]) request.getAttribute("lectores");
+												if (lectores != null) {
+													for (DtLector lector : lectores) {
+														String nombreCompleto = lector.getNombre() + " (" + lector.getEmail() + ")";
+														boolean suspendido = lector.getNombre().contains("(SUSPENDIDO)");
+														String optionClass = suspendido ? "disabled" : "";
+														String optionStyle = suspendido ? "color: #999;" : "";
+											%>
+											<option value="<%= lector.getEmail() %>" class="<%= optionClass %>" style="<%= optionStyle %>" <%= suspendido ? "disabled" : "" %>><%= nombreCompleto %></option>
+											<%
+													}
+												}
+											%>
+										</select>
+										<small class="form-text text-muted">Seleccione el lector que solicita el préstamo</small>
+									<% } %>
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -656,7 +686,11 @@
 											}
 										%>
 									</select>
-									<small class="form-text text-muted">Seleccione el bibliotecario que procesa el préstamo</small>
+									<% if ("LECTOR".equals(tipoUsuario)) { %>
+										<small class="form-text text-muted">Será procesado por un bibliotecario</small>
+									<% } else { %>
+										<small class="form-text text-muted">Seleccione el bibliotecario que procesa el préstamo</small>
+									<% } %>
 								</div>
 							</div>
 						</div>
@@ -672,7 +706,13 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-						<button type="submit" class="btn btn-success">Agregar Préstamo</button>
+						<button type="submit" class="btn btn-success">
+							<% if ("LECTOR".equals(tipoUsuario)) { %>
+								Solicitar Préstamo
+							<% } else { %>
+								Agregar Préstamo
+							<% } %>
+						</button>
 					</div>
 				</form>
 			</div>
